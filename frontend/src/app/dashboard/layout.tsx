@@ -55,12 +55,6 @@ type NavItem = {
   icon: LucideIcon;
 };
 
-type DashboardUser = {
-  name?: string | null;
-  email?: string | null;
-  role?: string | null;
-} | null;
-
 function DashboardNavLink({
   item,
   pathname,
@@ -97,12 +91,10 @@ function DashboardNavLink({
 
 function DashboardSidebarContent({
   isAdmin,
-  user,
   pathname,
   onNavigate,
 }: {
   isAdmin: boolean;
-  user: DashboardUser;
   pathname: string;
   onNavigate: () => void;
 }) {
@@ -146,24 +138,6 @@ function DashboardSidebarContent({
         )}
       </nav>
 
-      {/* Sidebar footer */}
-      <div className="p-4 border-t border-washed-black/10">
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-8 h-8 rounded-full bg-royal-blue/10 flex items-center justify-center">
-            <span className="text-sm font-semibold text-royal-blue">
-              {user?.name?.charAt(0)?.toUpperCase() || "U"}
-            </span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-washed-black truncate">
-              {user?.name || "User"}
-            </p>
-            <p className="text-xs text-dim-grey truncate">
-              {user?.email || ""}
-            </p>
-          </div>
-        </div>
-      </div>
     </>
   );
 }
@@ -188,7 +162,6 @@ export default function DashboardLayout({
   const sidebar = (
     <DashboardSidebarContent
       isAdmin={isAdmin}
-      user={user}
       pathname={pathname}
       onNavigate={() => setSidebarOpen(false)}
     />
