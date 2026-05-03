@@ -1,123 +1,176 @@
 # LLMore.id
 
-**Platform AI Gateway #1 Indonesia** — Akses berbagai model AI premium melalui satu API gateway dengan pembayaran lokal.
+**Platform API Gateway AI untuk developer Indonesia** - akses model AI premium melalui satu endpoint OpenAI-compatible dengan billing lokal.
 
 ![LLMore.id](https://img.shields.io/badge/LLMore-API%20Gateway-indigo)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
 
-## 📋 Daftar Isi
+## Daftar Isi
 
 - [Tentang](#tentang)
-- [Arsitektur](#arsitektur)
+- [Arsitektur Sistem](#arsitektur-sistem)
+- [Alur Kerja Lengkap](#alur-kerja-lengkap)
 - [Prerequisites](#prerequisites)
 - [Quick Start (Docker)](#quick-start-docker)
 - [Manual Setup](#manual-setup)
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
-- [Kontribusi](#kontribusi)
+- [Struktur Project](#struktur-project)
+- [Lisensi](#lisensi)
 
 ---
 
 ## Tentang
 
-LLMore.id adalah platform API gateway yang menyediakan akses ke berbagai model AI dengan harga terjangkau untuk developer Indonesia. Fitur utama:
+LLMore.id adalah platform API gateway yang memudahkan integrasi AI untuk developer di Indonesia.
 
-- 🚀 **API Kompatibel OpenAI** — Ganti `baseURL` saja, tanpa ubah kode
-- 💳 **Pembayaran Lokal** — QRIS, bank transfer, e-wallet via Midtrans
-- ⚡ **Streaming Real-time** — SSE streaming untuk response AI
-- 🔑 **API Key Management** — Buat dan kelola multiple API keys
-- 📊 **Usage Tracking** — Monitor pemakaian token secara real-time
-- 🛡️ **Rate Limiting** — Proteksi dan kontrol per plan
+Fitur utama:
+
+- API kompatibel OpenAI (`/v1/chat/completions`)
+- Pembayaran lokal via KlikQRIS
+- API key management per user
+- Quota dan rate limiting per plan
+- Streaming real-time (SSE)
+- Dashboard billing, usage, dan admin
 
 ---
 
-## Arsitektur
+## Arsitektur Sistem
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    Nginx (port 80)                   │
-│  llmore.id → Frontend    api.llmore.id → GW   │
-└──────┬──────────────┬──────────────────┬─────────────┘
-       │              │                  │
-  ┌────▼────┐   ┌─────▼─────┐   ┌───────▼──────┐
-  │ Next.js │   │  Laravel   │   │  Node.js     │
-  │Frontend │   │  Backend   │   │  Gateway     │
-  │ :3000   │   │  :8000     │   │  :3001       │
-  └─────────┘   └─────┬──────┘   └──────┬───────┘
-                      │                  │
-              ┌───────▼──────────────────▼───────┐
-              │     PostgreSQL  │     Redis       │
-              │     :5432      │     :6379        │
-              └────────────────┴─────────────────┘
+```mermaid
+flowchart LR
+    U[User / Client App] --> N[Nginx]
+    N --> F[Frontend Next.js<br/>:3000]
+    N --> B[Backend Laravel<br/>:8000]
+    N --> G[Gateway Node.js<br/>:3001]
+
+    F --> B
+    F --> G
+    B --> P[(PostgreSQL)]
+    B --> R[(Redis)]
+    G --> R
+    G --> A[AskCodi API]
 ```
 
-| Service      | Teknologi       | Port | Deskripsi                          |
-| ------------ | --------------- | ---- | ---------------------------------- |
-| **Frontend** | Next.js 15      | 3000 | Dashboard & landing page           |
-| **Backend**  | Laravel 12      | 8000 | REST API, auth, billing            |
-| **Gateway**  | Node.js/Express | 3001 | AI proxy, streaming, rate limiting |
-| **Database** | PostgreSQL 16   | 5432 | Data utama                         |
-| **Cache**    | Redis 7         | 6379 | Caching, rate limit, session       |
-| **Proxy**    | Nginx           | 80   | Reverse proxy & load balancer      |
+| Service | Teknologi | Port | Fungsi |
+| --- | --- | --- | --- |
+| Frontend | Next.js 16 + React 19 | 3000 | Dashboard, docs, auth UI |
+| Backend | Laravel 13 | 8000 | Auth, billing, API key, admin, usage |
+| Gateway | Node.js + Express | 3001 | OpenAI-compatible proxy + streaming |
+| Database | PostgreSQL 16 | 5432 | Data utama |
+| Cache | Redis 7 | 6379 | Quota, rate limit, API key cache, queue |
+| Reverse Proxy | Nginx | 80/443 | Routing domain + proxy |
+
+---
+
+## Alur Kerja Lengkap
+
+### Ringkasan Alur End-to-End
+
+```mermaid
+flowchart TD
+    A[User Register / Login] --> B[Backend Auth - Sanctum]
+    B --> C{Punya Paket Aktif?}
+
+    C -->|Belum| D[Pilih Paket di Dashboard Billing]
+    D --> E[POST /api/billing/purchase]
+    E --> F[Generate Order QRIS]
+    F --> G[User Bayar via QRIS]
+    G --> H[Webhook /api/payment/webhook]
+    H --> I[Backend Aktivasi Subscription]
+    I --> J[Initialize Quota di Redis]
+    J --> K[Refresh API Key Cache]
+
+    C -->|Sudah| L[Generate API Key]
+    K --> L
+    L --> M[Client kirim request ke /v1/chat/completions]
+    M --> N[Gateway validasi API Key dari Redis]
+    N --> O[Gateway cek rate limit dan quota]
+    O --> P[Proxy request ke AskCodi]
+    P --> Q[Streaming response ke client]
+    Q --> R[Gateway deduct quota dan push usage_logs_queue]
+    R --> S[Laravel command usage:process simpan ke PostgreSQL]
+    S --> T[Dashboard Usage/Billing ter-update]
+```
+
+### Detail Alur Operasional
+
+1. User login melalui frontend (`/login`) menggunakan email/password atau Google OAuth.
+2. Backend mengeluarkan token Sanctum untuk sesi API frontend.
+3. Jika user belum memiliki paket aktif, user melakukan pembelian paket dari halaman billing.
+4. Backend membuat transaksi QRIS dan menyimpan status `pending`.
+5. Setelah pembayaran berhasil, webhook memicu aktivasi subscription dan reset quota.
+6. User membuat API key untuk akses gateway AI.
+7. Client eksternal memanggil endpoint gateway OpenAI-compatible.
+8. Gateway membaca API key cache dari Redis, cek quota/rate limit, lalu meneruskan request ke AskCodi.
+9. Gateway mengembalikan streaming/non-streaming response ke client.
+10. Usage log diantrikan di Redis, lalu diproses Laravel scheduler ke PostgreSQL.
+11. Dashboard menampilkan statistik penggunaan, transaksi, dan status paket terbaru.
+
+### Scheduler dan Sinkronisasi Data
+
+- `usage:process --batch=500` (setiap menit): memindahkan usage log dari Redis ke PostgreSQL.
+- `quota:sync` (setiap 5 menit): sinkronisasi pemakaian quota Redis ke database.
+- `apikey:cache-refresh` (setiap 1 jam): refresh API key cache aktif ke Redis.
 
 ---
 
 ## Prerequisites
 
-- **Docker** v20+ & **Docker Compose** v2+
-- (Manual) **Node.js** v20+
-- (Manual) **PHP** 8.3+ & **Composer** v2+
-- (Manual) **PostgreSQL** 16+
-- (Manual) **Redis** 7+
+- Docker v20+ dan Docker Compose v2+
+- Untuk manual setup:
+  - Node.js v20+
+  - PHP 8.3+ dan Composer v2+
+  - PostgreSQL 16+
+  - Redis 7+
 
 ---
 
 ## Quick Start (Docker)
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/your-org/llmore.git
+# 1) Clone repository
+git clone https://github.com/radacore/llmore.git
 cd llmore
 
-# 2. Copy environment files
+# 2) Siapkan env file
 cp .env.example .env
 cp backend/.env.example backend/.env
 cp gateway/.env.example gateway/.env
 
-# 3. Generate Laravel app key
+# 3) Generate Laravel APP_KEY
 cd backend && php artisan key:generate && cd ..
-# Atau edit backend/.env secara manual: APP_KEY=base64:...
 
-# 4. Jalankan semua services
+# 4) Jalankan semua service
 docker compose up -d
 
-# 5. Jalankan migration & seeder
+# 5) Jalankan migrasi + seeder
 docker exec llmore-backend php artisan migrate --seed
 
-# 6. Akses aplikasi
-# Frontend:  http://localhost
-# Backend:   http://localhost/api
-# Gateway:   http://localhost:3001
+# 6) Akses aplikasi
+# Frontend: http://localhost
+# Backend:  http://localhost/api
+# Gateway:  http://localhost:3001
 ```
 
-### Perintah Docker Berguna
+Perintah Docker yang sering dipakai:
 
 ```bash
-# Lihat logs
+# Lihat semua logs
 docker compose logs -f
 
 # Restart service tertentu
 docker compose restart backend
 
-# Rebuild setelah perubahan Dockerfile
+# Rebuild image setelah ubah Dockerfile
 docker compose up -d --build
 
-# Stop semua services
+# Stop semua service
 docker compose down
 
-# Stop & hapus volumes (reset database)
+# Stop + hapus volume (reset database)
 docker compose down -v
 ```
 
@@ -125,14 +178,13 @@ docker compose down -v
 
 ## Manual Setup
 
-### 1. Database
+### 1) Database
 
 ```bash
-# Buat database PostgreSQL
 createdb llmore
 ```
 
-### 2. Backend (Laravel)
+### 2) Backend (Laravel)
 
 ```bash
 cd backend
@@ -143,16 +195,15 @@ php artisan migrate --seed
 php artisan serve --host=0.0.0.0 --port=8000
 ```
 
-### 3. Frontend (Next.js)
+### 3) Frontend (Next.js)
 
 ```bash
 cd frontend
-cp .env.example .env.local  # Jika ada
 npm install
 npm run dev
 ```
 
-### 4. Gateway (Node.js)
+### 4) Gateway (Node.js)
 
 ```bash
 cd gateway
@@ -161,28 +212,36 @@ npm install
 node src/index.js
 ```
 
+Atau jalankan semua service lokal sekaligus:
+
+```bash
+./start-all.sh
+```
+
 ---
 
 ## Environment Variables
 
-Salin `.env.example` ke `.env` di root project dan isi nilai yang sesuai:
+Salin `.env.example` root ke `.env`, lalu sesuaikan nilainya.
 
-| Variable                         | Deskripsi                     | Default                    |
-| -------------------------------- | ----------------------------- | -------------------------- |
-| `DB_DATABASE`                    | Nama database PostgreSQL      | `llmore`                |
-| `DB_USERNAME`                    | Username database             | `llmore`                |
-| `DB_PASSWORD`                    | Password database             | `secret`                   |
-| `REDIS_HOST`                     | Host Redis                    | `127.0.0.1`               |
-| `GOOGLE_CLIENT_ID`               | Google OAuth Client ID        | —                          |
-| `GOOGLE_CLIENT_SECRET`           | Google OAuth Client Secret    | —                          |
-| `MIDTRANS_SERVER_KEY`            | Midtrans Server Key           | —                          |
-| `MIDTRANS_CLIENT_KEY`            | Midtrans Client Key           | —                          |
-| `ASKCODI_API_KEY`                | AskCodi API Key               | —                          |
-| `NEXT_PUBLIC_API_URL`            | URL Backend API untuk frontend| `http://localhost:8000/api` |
-| `NEXT_PUBLIC_GATEWAY_URL`        | URL Gateway untuk frontend    | `http://localhost:3001`    |
-| `GATEWAY_PORT`                   | Port Gateway                  | `3001`                     |
+| Variable | Deskripsi | Default |
+| --- | --- | --- |
+| `DB_DATABASE` | Nama database PostgreSQL | `llmore` |
+| `DB_USERNAME` | Username database | `llmore` |
+| `DB_PASSWORD` | Password database | `secret` |
+| `REDIS_HOST` | Host Redis | `127.0.0.1` |
+| `REDIS_PORT` | Port Redis | `6379` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | - |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | - |
+| `KLIKQRIS_API_KEY` | API key KlikQRIS | - |
+| `KLIKQRIS_MERCHANT_ID` | Merchant ID KlikQRIS | - |
+| `ASKCODI_API_URL` | URL upstream AskCodi | `https://api.askcodi.com/v1` |
+| `ASKCODI_API_KEY` | API key AskCodi | - |
+| `NEXT_PUBLIC_API_URL` | URL backend untuk frontend | `http://localhost:8000/api` |
+| `NEXT_PUBLIC_GATEWAY_URL` | URL gateway untuk frontend | `http://localhost:3001` |
+| `GATEWAY_PORT` | Port service gateway | `3001` |
 
-> ⚠️ **Penting:** Untuk production, pastikan mengisi semua API key dan menggunakan password yang kuat.
+> Penting: jangan commit API key asli ke repository.
 
 ---
 
@@ -190,73 +249,56 @@ Salin `.env.example` ke `.env` di root project dan isi nilai yang sesuai:
 
 ### Backend API (`/api`)
 
-| Method | Endpoint                          | Deskripsi                   |
-| ------ | --------------------------------- | --------------------------- |
-| POST   | `/api/auth/google`                | Login via Google OAuth      |
-| POST   | `/api/auth/logout`                | Logout                      |
-| GET    | `/api/user`                       | Get current user            |
-| GET    | `/api/api-keys`                   | List API keys               |
-| POST   | `/api/api-keys`                   | Create API key              |
-| DELETE | `/api/api-keys/:id`               | Delete API key              |
-| GET    | `/api/billing/plans`              | List subscription plans     |
-| POST   | `/api/billing/subscribe`          | Create subscription         |
-| POST   | `/api/billing/webhook/midtrans`   | Midtrans payment webhook    |
-| GET    | `/api/usage`                      | Get usage statistics        |
+| Method | Endpoint | Deskripsi |
+| --- | --- | --- |
+| POST | `/api/auth/google` | Ambil URL redirect Google OAuth |
+| GET | `/api/auth/google/callback` | Callback OAuth Google |
+| POST | `/api/auth/login` | Login email/password |
+| POST | `/api/auth/register` | Register user |
+| POST | `/api/auth/logout` | Logout (auth required) |
+| GET | `/api/user` | Profil user saat ini |
+| GET | `/api/user/subscription` | Subscription aktif |
+| GET | `/api/user/usage-summary` | Ringkasan usage |
+| GET | `/api/api-keys` | List API key |
+| POST | `/api/api-keys` | Buat API key |
+| GET | `/api/api-keys/{id}` | Detail API key |
+| DELETE | `/api/api-keys/{id}` | Revoke API key |
+| GET | `/api/plans` | List plan aktif (public) |
+| POST | `/api/billing/purchase` | Buat transaksi pembelian paket |
+| GET | `/api/billing/transactions` | Riwayat transaksi user |
+| GET | `/api/billing/payment-status/{orderId}` | Cek status pembayaran |
+| POST | `/api/payment/webhook` | Webhook KlikQRIS (public) |
+| GET | `/api/models` | List model AI |
 
-### Gateway API (`api.llmore.id/v1`)
+### Gateway API (`/v1`)
 
-| Method | Endpoint               | Deskripsi                          |
-| ------ | ---------------------- | ---------------------------------- |
-| POST   | `/v1/chat/completions` | Chat completion (OpenAI-compatible)|
-| GET    | `/v1/models`           | List available models              |
-| GET    | `/v1/usage`            | Get API key usage                  |
+| Method | Endpoint | Deskripsi |
+| --- | --- | --- |
+| POST | `/v1/chat/completions` | Chat completion OpenAI-compatible |
+| GET | `/v1/models` | List model tersedia |
+| GET | `/v1/usage` | Informasi quota usage API key |
 
-> 📖 Dokumentasi API lengkap tersedia di halaman [/docs](http://localhost:3000/docs) pada frontend.
+Dokumentasi interaktif tersedia di frontend: `http://localhost:3000/docs`.
 
 ---
 
 ## Struktur Project
 
-```
+```text
 llmore/
-├── backend/          # Laravel 12 — REST API
-├── frontend/         # Next.js 15 — Dashboard & Landing
-├── gateway/          # Node.js — AI API Gateway
-├── docker/           # Dockerfile untuk setiap service
-├── nginx/            # Nginx reverse proxy config
+├── backend/            # Laravel 13 (auth, billing, admin, usage)
+├── frontend/           # Next.js 16 (dashboard, docs, auth UI)
+├── gateway/            # Node.js gateway OpenAI-compatible
+├── docker/             # Dockerfile tiap service
+├── nginx/              # Nginx reverse proxy config
+├── plans/              # PRD dan dokumen perencanaan
 ├── docker-compose.yml
-├── .env.example
+├── start-all.sh
 └── README.md
 ```
 
 ---
 
-## Kontribusi
-
-1. Fork repository ini
-2. Buat branch fitur: `git checkout -b fitur/nama-fitur`
-3. Commit perubahan: `git commit -m "feat: deskripsi fitur"`
-4. Push ke branch: `git push origin fitur/nama-fitur`
-5. Buat Pull Request
-
-### Konvensi Commit
-
-- `feat:` — Fitur baru
-- `fix:` — Bug fix
-- `docs:` — Dokumentasi
-- `refactor:` — Refactoring kode
-- `test:` — Testing
-- `chore:` — Maintenance
-
----
-
 ## Lisensi
 
-Project ini dilisensikan di bawah [MIT License](LICENSE).
-
----
-
-<p align="center">
-  Dibuat dengan ❤️ untuk developer Indonesia<br/>
-  <strong>LLMore.id</strong> — API AI Terjangkau
-</p>
+Project ini menggunakan [MIT License](LICENSE).
