@@ -12,11 +12,15 @@ class TransactionResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public function toArray(Request $request): array
+    public function toArray(Request $_request): array
     {
+        $type = $this->plan_id ? 'subscription' : 'top_up';
+
         return [
             'id' => $this->id,
             'order_id' => $this->order_id,
+            'type' => $type,
+            'token_amount' => $type === 'subscription' ? $this->plan?->token_quota : null,
             'plan' => [
                 'name' => $this->plan->name,
                 'slug' => $this->plan->slug,
