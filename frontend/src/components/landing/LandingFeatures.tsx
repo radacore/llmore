@@ -1,3 +1,4 @@
+import type React from "react";
 import { Zap, Radio, Code2, CreditCard } from "lucide-react";
 
 type Surface = "gold" | "blue" | "beige" | "moss";
@@ -76,7 +77,7 @@ export function LandingFeatures() {
   return (
     <section id="fitur" className="bg-pure-white py-[60px] md:py-[96px]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <div data-reveal className="max-w-2xl mb-12">
           <p className="text-[11px] font-medium text-[#1009f6] uppercase tracking-[0.2em] mb-4">
             Mengapa LLMore?
           </p>
@@ -86,16 +87,18 @@ export function LandingFeatures() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {features.map((f) => {
+          {features.map((f, idx) => {
             const s = surfaceStyle[f.surface];
             const Icon = f.icon;
             return (
               <div
                 key={f.title}
-                className={`${s.bg} rounded-[24px] p-12 flex flex-col gap-5`}
+                data-reveal
+                style={{ "--reveal-delay": `${idx * 90}ms` } as React.CSSProperties}
+                className={`${s.bg} lp-card-hover rounded-[24px] p-12 flex flex-col gap-5 cursor-default`}
               >
                 <span
-                  className={`${s.iconBg} ${s.iconColor} inline-flex items-center justify-center w-12 h-12 rounded-full`}
+                  className={`${s.iconBg} ${s.iconColor} lp-card-icon inline-flex items-center justify-center w-12 h-12 rounded-full`}
                 >
                   <Icon className="h-5 w-5" />
                 </span>

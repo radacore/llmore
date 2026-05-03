@@ -7,10 +7,12 @@ import {
   LandingCta,
   LandingFooter,
 } from "@/components/landing/LandingCtaFooter";
+import { ScrollReveal } from "@/components/landing/ScrollReveal";
 
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-pure-white text-washed-black antialiased">
+      <ScrollReveal />
       <LandingNav />
       <LandingHero />
       <LandingMarquee />

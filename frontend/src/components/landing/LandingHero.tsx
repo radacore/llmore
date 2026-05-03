@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import { Sparkles, ArrowUpRight } from "lucide-react";
 
@@ -23,7 +24,7 @@ export function LandingHero() {
       />
 
       <div className="relative max-w-[1200px] mx-auto px-6 lg:px-8 pt-20 pb-[60px]">
-        <div className="text-center max-w-4xl mx-auto">
+        <div data-reveal className="text-center max-w-4xl mx-auto">
           {/* Eyebrow tag */}
           <span className="inline-flex items-center gap-2 px-[14px] py-[7px] rounded-full bg-beige text-washed-black text-[11px] font-medium border border-washed-black/10">
             <Sparkles className="h-3 w-3 text-[#1009f6]" />
@@ -75,8 +76,8 @@ export function LandingHero() {
         </div>
 
         {/* Code preview card */}
-        <div className="mt-16 max-w-2xl mx-auto">
-          <div className="terminal-surface rounded-[24px] overflow-hidden border-4 border-[#1009f6]">
+        <div data-reveal style={{ "--reveal-delay": "160ms" } as React.CSSProperties} className="mt-16 max-w-2xl mx-auto">
+          <div className="terminal-surface lp-card-hover rounded-[24px] overflow-hidden border-4 border-[#1009f6]">
             <div className="terminal-header flex items-center gap-2 px-5 py-3 border-b">
               <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
               <span className="w-3 h-3 rounded-full bg-[#febc2e]" />

@@ -1,3 +1,4 @@
+import type React from "react";
 import Link from "next/link";
 import { Check, Star } from "lucide-react";
 
@@ -71,7 +72,7 @@ export function LandingPricing() {
   return (
     <section id="harga" className="bg-pearl py-[60px] md:py-[96px]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-        <div className="max-w-2xl mb-12">
+        <div data-reveal className="max-w-2xl mb-12">
           <p className="text-[11px] font-medium text-[#1009f6] uppercase tracking-[0.2em] mb-4">
             Harga
           </p>
@@ -81,15 +82,17 @@ export function LandingPricing() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {plans.map((plan) => {
+          {plans.map((plan, idx) => {
             const isHi = plan.highlighted;
             return (
               <div
                 key={plan.name}
-                className={`relative rounded-[24px] p-7 flex flex-col ${
+                data-reveal
+                style={{ "--reveal-delay": `${idx * 80}ms` } as React.CSSProperties}
+                className={`relative lp-card-hover rounded-[24px] p-7 flex flex-col ${
                   isHi
-                    ? "bg-[#1009f6] text-pure-white border-4 border-washed-black"
-                    : "bg-pure-white text-washed-black border border-washed-black/10"
+                    ? "bg-[#1009f6] text-pure-white border-4 border-washed-black hover:border-[#ffba09]"
+                    : "bg-pure-white text-washed-black border border-washed-black/10 hover:border-washed-black/30"
                 }`}
               >
                 {isHi && (

@@ -5,7 +5,7 @@ export function LandingCta() {
   return (
     <section className="bg-pure-white py-[60px] md:py-[96px]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
-        <div className="relative bg-[#ffba09] rounded-[40px] p-12 md:p-16 overflow-hidden border-4 border-washed-black">
+        <div data-reveal className="relative lp-card-hover bg-[#ffba09] rounded-[40px] p-12 md:p-16 overflow-hidden border-4 border-washed-black">
           {/* Decorative shapes */}
           <span
             aria-hidden
