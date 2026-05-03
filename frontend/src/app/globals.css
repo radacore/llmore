@@ -1,0 +1,288 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   THEME — base palette tokens (Contractbook).
+   Dark mode di-handle lewat [data-theme="dark"] di <html> yang meng-override
+   sebagian token "semantic" (lihat blok :root & [data-theme="dark"] di bawah).
+   ============================================================================ */
+@theme {
+    /* === Contractbook palette === */
+    --color-washed-black: #1a1a1a;
+    --color-pure-white: #ffffff;
+    --color-pearl: #f7f7f3;
+    --color-beige: #f0f0ec;
+    --color-ink-black: #000000;
+    --color-concrete: #d4d4d0;
+    --color-dim-grey: #6d6868;
+    --color-silver-mist: #b3b3b3;
+    --color-royal-blue: #1009f6;
+    --color-energy-gold: #ffba09;
+    --color-sky-blue: #add3e5;
+    --color-deep-moss: #304801;
+    --color-thistle-bloom: #e3c7de;
+
+    /* === Semantic aliases (akan dioverride di dark mode) === */
+    --color-surface-1: var(--color-pure-white); /* page canvas */
+    --color-surface-2: var(--color-pearl); /* alt section */
+    --color-surface-3: var(--color-beige); /* input/secondary card */
+    --color-fg: var(--color-washed-black); /* primary text */
+    --color-fg-muted: var(--color-dim-grey); /* secondary text */
+    --color-fg-subtle: var(--color-silver-mist); /* placeholder, tertiary */
+    --color-line: rgba(26, 26, 26, 0.1); /* hairline border */
+    --color-line-strong: var(--color-washed-black);
+
+    /* Type Scale */
+    --text-caption: 11px;
+    --text-body: 14px;
+    --text-heading-sm: 25px;
+    --text-heading: 28px;
+    --text-heading-lg: 32px;
+    --text-display: 48px;
+
+    /* Named Radii */
+    --radius-tags: 9999px;
+    --radius-cards: 24px;
+    --radius-images: 40px;
+    --radius-inputs: 4.375px;
+    --radius-buttons: 999px;
+
+    /* === Shadcn-style fallback (dipertahankan utk halaman lain) === */
+    --color-background: hsl(0 0% 100%);
+    --color-foreground: hsl(222.2 84% 4.9%);
+    --color-primary: hsl(221.2 83.2% 53.3%);
+    --color-primary-foreground: hsl(210 40% 98%);
+    --color-secondary: hsl(210 40% 96.1%);
+    --color-secondary-foreground: hsl(222.2 47.4% 11.2%);
+    --color-muted: hsl(210 40% 96.1%);
+    --color-muted-foreground: hsl(215.4 16.3% 46.9%);
+    --color-accent: hsl(210 40% 96.1%);
+    --color-accent-foreground: hsl(222.2 47.4% 11.2%);
+    --color-destructive: hsl(0 84.2% 60.2%);
+    --color-border: hsl(214.3 31.8% 91.4%);
+    --color-ring: hsl(221.2 83.2% 53.3%);
+    --radius: 0.5rem;
+}
+
+/* ============================================================================
+   DARK MODE — override semantic aliases saja.
+   Brand colors (royal blue, energy gold, deep moss, sky blue, thistle bloom)
+   sengaja TIDAK diubah karena memang harus tetap vibrant di kedua mode.
+   ============================================================================ */
+:root[data-theme="dark"] {
+    /* Softer dark palette — bukan hitam/putih ekstrem. Lebih nyaman untuk tabel/dashboard. */
+    --color-surface-1: #121210;
+    --color-surface-2: #181816;
+    --color-surface-3: #20201d;
+    --color-fg: #ded8cf;
+    --color-fg-muted: #a8a198;
+    --color-fg-subtle: #7d776f;
+    --color-line: rgba(222, 216, 207, 0.11);
+    --color-line-strong: rgba(222, 216, 207, 0.26);
+
+    /* Override Contractbook neutral palette agar utilities seperti bg-pure-white,
+       text-washed-black, bg-pearl, bg-beige ikut dark-aware. */
+    --color-pure-white: #121210; /* page canvas / cards */
+    --color-washed-black: #ded8cf; /* primary text */
+    --color-pearl: #181816; /* page background / table header */
+    --color-beige: #20201d; /* hover/input/secondary */
+    --color-ink-black: #f5efe4; /* strongest text, still warm */
+    --color-silver-mist: rgba(222, 216, 207, 0.18);
+    --color-dim-grey: #a8a198;
+    --color-concrete: #2b2b27;
+
+    /* Accent juga sedikit dilembutkan di dark mode supaya tidak neon. */
+    --color-royal-blue: #8b8aff;
+    --color-energy-gold: #e5b647;
+    --color-sky-blue: #8fb9cd;
+    --color-thistle-bloom: #caaeca;
+}
+
+@layer base {
+    * {
+        border-color: var(--color-border);
+    }
+    html {
+        background-color: var(--color-surface-1);
+        color: var(--color-fg);
+        color-scheme: light;
+        transition:
+            background-color 0.15s ease,
+            color 0.15s ease;
+    }
+    html[data-theme="dark"] {
+        color-scheme: dark;
+    }
+    body {
+        background-color: var(--color-surface-1);
+        color: var(--color-fg);
+    }
+}
+
+/* ============================================================================
+   Marquee
+   ============================================================================ */
+@keyframes lp-marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+.lp-marquee-track {
+    animation: lp-marquee 30s linear infinite;
+}
+
+/* ============================================================================
+   View Transitions API — circular reveal dari posisi tombol theme toggle.
+   Dipakai oleh ThemeProvider via document.startViewTransition().
+   Browser yang tidak support: fallback fade halus (sudah dihandle via
+   `transition` di html element di atas).
+   ============================================================================ */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+::view-transition-new(root) {
+    z-index: 2;
+}
+
+/* Reveal animation: clip-path circle expand dari posisi tombol.
+   --x dan --y di-set inline oleh ThemeProvider (lokasi klik). */
+@keyframes theme-reveal {
+    from {
+        clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+    }
+    to {
+        clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+    }
+}
+
+::view-transition-new(root) {
+    animation: theme-reveal 0.55s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Untuk user yang prefer reduced motion — instant tanpa animasi reveal */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-new(root),
+    ::view-transition-old(root) {
+        animation: none !important;
+    }
+}
+
+/* ============================================================================
+   Dashboard dark-mode softening
+   Membuat tabel/card dashboard lebih nyaman: teks tidak putih keras, border halus,
+   table header lebih soft, hover row tidak terlalu kontras.
+   ============================================================================ */
+:root[data-theme="dark"] .dashboard-shell table th {
+    color: #b8b0a6;
+}
+
+:root[data-theme="dark"] .dashboard-shell table td {
+    color: #cfc7bb;
+}
+
+:root[data-theme="dark"] .dashboard-shell table tr,
+:root[data-theme="dark"] .dashboard-shell table td,
+:root[data-theme="dark"] .dashboard-shell table th {
+    border-color: rgba(222, 216, 207, 0.045) !important;
+}
+
+:root[data-theme="dark"] .dashboard-shell tbody tr:last-child td {
+    border-bottom-color: transparent !important;
+}
+
+:root[data-theme="dark"] .dashboard-shell table td .text-dim-grey,
+:root[data-theme="dark"] .dashboard-shell table td.text-dim-grey {
+    color: #9f978e;
+}
+
+:root[data-theme="dark"] .dashboard-shell thead tr {
+    background: #1d1d1a;
+}
+
+:root[data-theme="dark"] .dashboard-shell tbody tr:hover {
+    background: rgba(229, 182, 71, 0.055);
+}
+
+:root[data-theme="dark"]
+    .dashboard-shell
+    .dashboard-soft-divide
+    > :not([hidden])
+    ~ :not([hidden]) {
+    border-color: rgba(222, 216, 207, 0.055) !important;
+}
+
+:root[data-theme="dark"] .dashboard-shell .recharts-text {
+    fill: #a8a198;
+}
+
+/* ============================================================================
+   Adaptive terminal surfaces
+   Light mode  : terminal gelap
+   Dark mode   : terminal terang (sesuai request)
+   ============================================================================ */
+.terminal-surface {
+    background: #0c0c0c;
+    border-color: #0c0c0c;
+    color: #f0f0ec;
+}
+
+.terminal-header {
+    background: #020202;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.terminal-text {
+    color: #f0f0ec;
+}
+
+.terminal-muted {
+    color: #8a8a8a;
+}
+
+.terminal-copy-idle {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+}
+
+.terminal-copy-idle:hover {
+    background: #ffba09;
+    color: #000000;
+}
+
+:root[data-theme="dark"] .terminal-surface {
+    background: #f7f7f3;
+    border-color: #1a1a1a;
+    color: #1a1a1a;
+}
+
+:root[data-theme="dark"] .terminal-header {
+    background: #ffffff;
+    border-color: rgba(26, 26, 26, 0.12);
+}
+
+:root[data-theme="dark"] .terminal-text {
+    color: #1a1a1a;
+}
+
+:root[data-theme="dark"] .terminal-muted {
+    color: #6d6868;
+}
+
+:root[data-theme="dark"] .terminal-copy-idle {
+    background: #f0f0ec;
+    color: #1a1a1a;
+    border: 1px solid rgba(26, 26, 26, 0.12);
+}
+
+:root[data-theme="dark"] .terminal-copy-idle:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+}

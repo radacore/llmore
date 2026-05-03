@@ -1,0 +1,56 @@
+# ===========================================
+# DaengBisa.id - Git Ignore
+# ===========================================
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# === Node.js ===
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === Next.js ===
+frontend/.next/
+frontend/out/
+
+# === Laravel / PHP ===
+backend/vendor/
+backend/storage/*.key
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*
+backend/.phpunit.result.cache
+backend/database/database.sqlite
+
+# === Docker ===
+docker/data/
+
+# === IDE ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# === Build / Compiled ===
+*.log
+dist/
+build/
+.logs/
+
+# === Misc large/unrelated files ===
+*.pkg
+*.dmg
+*.iso
+
+# === Testing ===
+coverage/
+.nyc_output/
