@@ -48,7 +48,7 @@ export function LandingNav() {
               href="/register"
               className="inline-flex items-center px-[20px] py-[12px] rounded-full bg-[#ffba09] text-[14px] font-bold text-ink-black hover:brightness-95 transition"
             >
-              Mulai gratis
+              Mulai sekarang
             </Link>
           </div>
         </div>

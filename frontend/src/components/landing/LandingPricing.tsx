@@ -1,79 +1,21 @@
-import type React from "react";
-import Link from "next/link";
-import { Check, Star } from "lucide-react";
+"use client";
 
-const plans = [
-  {
-    name: "Free",
-    price: "Rp 0",
-    period: "/bulan",
-    description: "Untuk mencoba dan eksplorasi.",
-    features: [
-      "1.000 token/bulan",
-      "Akses model dasar",
-      "Rate limit 10 req/menit",
-      "Community support",
-    ],
-    cta: "Mulai gratis",
-    href: "/register",
-    highlighted: false,
-  },
-  {
-    name: "Mahasiswa",
-    price: "Rp 25.000",
-    period: "/bulan",
-    description: "Email .ac.id verified.",
-    features: [
-      "50.000 token/bulan",
-      "Akses semua model",
-      "Rate limit 30 req/menit",
-      "Email support",
-    ],
-    cta: "Berlangganan",
-    href: "/register",
-    highlighted: false,
-  },
-  {
-    name: "Pro",
-    price: "Rp 99.000",
-    period: "/bulan",
-    description: "Untuk developer & startup.",
-    features: [
-      "500.000 token/bulan",
-      "Akses semua model",
-      "Rate limit 60 req/menit",
-      "Priority support",
-      "Webhook notifications",
-    ],
-    cta: "Berlangganan",
-    href: "/register",
-    highlighted: true,
-  },
-  {
-    name: "Enterprise",
-    price: "Custom",
-    period: "",
-    description: "Untuk skala besar.",
-    features: [
-      "Token unlimited",
-      "Dedicated instance",
-      "Custom rate limit",
-      "SLA 99.9%",
-      "24/7 support",
-      "Custom integration",
-    ],
-    cta: "Hubungi kami",
-    href: "https://wa.me/6281234567890",
-    highlighted: false,
-  },
-];
+import { usePlans, type Plan } from "@/hooks/useBilling";
+import { formatCurrency, formatNumber } from "@/lib/utils";
+
+function getPlanFeatures(plan: Plan): string[] {
+  return plan.features ?? [];
+}
 
 export function LandingPricing() {
+  const { data: plans, isLoading } = usePlans();
+  const activePlans = plans?.filter((plan) => plan.is_active) ?? [];
+
   return (
     <section id="harga" className="bg-pearl py-[60px] md:py-[96px]">
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
         <div data-reveal className="max-w-2xl mb-12">
-          <p className="text-[11px] font-medium text-[#1009f6] uppercase tracking-[0.2em] mb-4">
+          <p className="text-[11px] font-medium text-royal-blue uppercase tracking-[0.2em] mb-4">
             Harga
           </p>
           <h2 className="text-washed-black font-bold text-[32px] sm:text-[40px] md:text-[48px] leading-[1.1]">
@@ -81,94 +23,122 @@ export function LandingPricing() {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {plans.map((plan, idx) => {
-            const isHi = plan.highlighted;
-            return (
+        {isLoading ? (
+          <div data-reveal className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {["basic", "pro", "advance"].map((slug) => (
               <div
-                key={plan.name}
-                data-reveal
-                style={{ "--reveal-delay": `${idx * 80}ms` } as React.CSSProperties}
-                className={`relative lp-card-hover rounded-[24px] p-7 flex flex-col ${
-                  isHi
-                    ? "bg-[#1009f6] text-pure-white border-4 border-washed-black hover:border-[#ffba09]"
-                    : "bg-pure-white text-washed-black border border-washed-black/10 hover:border-washed-black/30"
-                }`}
+                key={slug}
+                className="h-[520px] rounded-[24px] border-2 border-washed-black/10 bg-pure-white p-6 md:p-8"
               >
-                {isHi && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 px-3 py-1 bg-[#ffba09] text-ink-black text-[11px] font-bold rounded-full border border-washed-black">
-                    <Star className="h-3 w-3 fill-ink-black" />
-                    POPULER
-                  </div>
-                )}
+                <div className="h-4 w-20 rounded-full bg-pearl" />
+                <div className="mt-5 h-8 w-32 rounded-full bg-pearl" />
+                <div className="mt-8 h-20 rounded-[24px] bg-pearl" />
+                <div className="mt-8 space-y-3">
+                  <div className="h-4 rounded-full bg-pearl" />
+                  <div className="h-4 rounded-full bg-pearl" />
+                  <div className="h-4 w-3/4 rounded-full bg-pearl" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : activePlans.length > 0 ? (
+          <div data-reveal className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {activePlans.map((plan) => {
+              const isPopular = plan.slug === "pro";
 
-                <h3 className="text-[16px] font-bold">{plan.name}</h3>
-                <p
-                  className={`text-[11px] mt-1 ${
-                    isHi ? "text-pure-white/70" : "text-dim-grey"
+              return (
+                <article
+                  key={plan.slug}
+                  className={`relative flex h-full flex-col overflow-hidden rounded-[24px] border-2 bg-pure-white p-6 transition duration-200 hover:-translate-y-1 hover:border-royal-blue hover:bg-pure-white md:p-8 ${
+                    isPopular ? "border-royal-blue" : "border-washed-black/10"
                   }`}
                 >
-                  {plan.description}
-                </p>
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-royal-blue">
+                        Paket
+                      </p>
+                      <h3 className="mt-3 text-[28px] font-bold leading-none text-washed-black">
+                        {plan.name}
+                      </h3>
+                    </div>
+                    {isPopular && (
+                      <span className="rounded-full bg-royal-blue px-3 py-1 text-[11px] font-bold uppercase tracking-[0.12em] text-pure-white">
+                        Populer
+                      </span>
+                    )}
+                  </div>
 
-                <div className="mt-5 mb-6 flex items-baseline gap-1">
-                  <span className="text-[32px] font-bold leading-none">
-                    {plan.price}
-                  </span>
-                  <span
-                    className={`text-[12px] ${
-                      isHi ? "text-pure-white/70" : "text-dim-grey"
-                    }`}
-                  >
-                    {plan.period}
-                  </span>
-                </div>
+                  <p className="mt-5 text-[14px] leading-[1.6] text-dim-grey">
+                    {plan.description}
+                  </p>
 
-                <ul className="space-y-3 mb-7 flex-1">
-                  {plan.features.map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-start gap-2 text-[14px] leading-[1.4]"
-                    >
-                      <Check
-                        className={`h-4 w-4 mt-0.5 flex-shrink-0 ${
-                          isHi ? "text-[#ffba09]" : "text-[#1009f6]"
-                        }`}
-                      />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+                  <div className="mt-8">
+                    <p className="text-[40px] font-bold leading-none tracking-tight text-washed-black">
+                      {formatCurrency(plan.price)}
+                    </p>
+                    <p className="mt-2 text-[14px] font-medium text-dim-grey">
+                      per bulan
+                    </p>
+                  </div>
 
-                {plan.href.startsWith("http") ? (
-                  <a
-                    href={plan.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`block w-full text-center py-3 rounded-full font-bold text-[14px] transition ${
-                      isHi
-                        ? "bg-[#ffba09] text-ink-black hover:brightness-95"
-                        : "bg-washed-black text-pure-white hover:bg-ink-black"
-                    }`}
-                  >
-                    {plan.cta}
-                  </a>
-                ) : (
-                  <Link
-                    href={plan.href}
-                    className={`block w-full text-center py-3 rounded-full font-bold text-[14px] transition ${
-                      isHi
-                        ? "bg-[#ffba09] text-ink-black hover:brightness-95"
-                        : "bg-washed-black text-pure-white hover:bg-ink-black"
-                    }`}
-                  >
-                    {plan.cta}
-                  </Link>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                  <div className="mt-8 grid gap-3 rounded-[24px] bg-pearl p-4">
+                    <div className="flex items-center justify-between gap-4 border-b border-washed-black/10 pb-3">
+                      <span className="text-[13px] font-medium text-dim-grey">
+                        Credit/bulan
+                      </span>
+                      <span className="text-[16px] font-bold text-royal-blue">
+                        {formatNumber(plan.token_quota)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4 border-b border-washed-black/10 pb-3">
+                      <span className="text-[13px] font-medium text-dim-grey">
+                        Rate limit
+                      </span>
+                      <span className="text-right text-[14px] font-bold text-washed-black">
+                        {plan.rate_limit_per_minute} request/menit
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[13px] font-medium text-dim-grey">
+                        API key
+                      </span>
+                      <span className="text-right text-[14px] font-bold text-washed-black">
+                        {plan.max_api_keys} API key
+                      </span>
+                    </div>
+                  </div>
+
+                  {getPlanFeatures(plan).length > 0 && (
+                    <ul className="mt-8 space-y-3">
+                      {getPlanFeatures(plan).map((feature) => (
+                        <li
+                          key={feature}
+                          className="flex gap-3 text-[14px] leading-[1.6] text-washed-black"
+                        >
+                          <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-energy-gold" />
+                          <span>{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div
+            data-reveal
+            className="rounded-[24px] border-2 border-washed-black/10 bg-pure-white p-8 text-center"
+          >
+            <p className="text-[18px] font-bold text-washed-black">
+              Belum ada paket aktif.
+            </p>
+            <p className="mt-2 text-[14px] text-dim-grey">
+              Paket yang dinonaktifkan dari admin tidak akan tampil di landing.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

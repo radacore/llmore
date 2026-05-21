@@ -58,7 +58,7 @@ export function LandingHero() {
               href="/register"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-[28px] py-[16px] rounded-full bg-[#ffba09] text-ink-black font-bold text-[14px] hover:brightness-95 transition"
             >
-              Mulai gratis
+              Mulai sekarang
               <ArrowUpRight className="h-4 w-4" />
             </Link>
             <Link
@@ -71,7 +71,7 @@ export function LandingHero() {
 
           {/* Trust */}
           <p className="mt-5 text-[11px] text-dim-grey">
-            Tanpa kartu kredit · 1.000 token gratis · Setup &lt; 2 menit
+            Paket Basic 70.000 credit/bulan · Setup &lt; 2 menit
           </p>
         </div>
 

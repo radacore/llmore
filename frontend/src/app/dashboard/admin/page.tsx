@@ -190,11 +190,11 @@ function AdminDashboardContent() {
           )}
         </div>
 
-        {/* Total Tokens Bulan Ini */}
+        {/* Total Credit Bulan Ini */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-dim-grey">
-              Total Tokens Bulan Ini
+              Total Credit Bulan Ini
             </p>
             <div className="p-2 bg-orange-50 rounded-xl">
               <Coins className="h-5 w-5 text-orange-600" />

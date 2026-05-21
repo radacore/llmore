@@ -19,6 +19,7 @@ export interface AdminDashboardData {
   plans_distribution: {
     name?: string;
     plan?: string;
+    slug?: string;
     active_subscriptions?: number;
     count?: number;
   }[];
@@ -97,6 +98,7 @@ export interface AdminPlan {
   token_quota: number;
   rate_limit_per_minute: number;
   max_api_keys: number;
+  features: string[] | null;
   is_active: boolean;
   active_subscriptions_count: number;
 }
@@ -218,6 +220,19 @@ export function useUpdateUserRole() {
   });
 }
 
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, number>({
+    mutationFn: async (id) => {
+      await api.delete(`/admin/users/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] });
+    },
+  });
+}
+
 export function useAdjustQuota() {
   const queryClient = useQueryClient();
   return useMutation<
@@ -297,6 +312,7 @@ export function useCreatePlan() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
     },
   });
 }
@@ -314,6 +330,7 @@ export function useUpdatePlan() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
     },
   });
 }

@@ -3,27 +3,21 @@ import { Callout } from "../Callout";
 
 const rateLimits = [
   {
-    plan: "Free",
-    perMinute: "5 req/menit",
-    perDay: "100 req/hari",
+    plan: "Basic",
+    perMinute: "30 req/menit",
+    perDay: "Menyesuaikan credit",
     accent: "bg-beige text-washed-black",
   },
   {
-    plan: "Mahasiswa",
-    perMinute: "20 req/menit",
-    perDay: "1.000 req/hari",
-    accent: "bg-[#add3e5] text-washed-black",
-  },
-  {
     plan: "Pro",
-    perMinute: "100 req/menit",
-    perDay: "10.000 req/hari",
+    perMinute: "60 req/menit",
+    perDay: "Menyesuaikan credit",
     accent: "bg-[#ffba09] text-washed-black",
   },
   {
-    plan: "Enterprise",
-    perMinute: "Custom",
-    perDay: "Custom",
+    plan: "Advance",
+    perMinute: "120 req/menit",
+    perDay: "Menyesuaikan credit",
     accent: "bg-[#1009f6] text-pure-white",
   },
 ];
@@ -140,10 +134,9 @@ export function RateLimitsSection() {
       </div>
 
       <Callout variant="info" title="Best practice">
-        Implementasi retry logic dengan{" "}
-        <strong>exponential backoff</strong> ketika menerima error 429. Cek
-        header <InlineCode>X-RateLimit-Remaining</InlineCode> untuk mengetahui
-        sisa kuota request kamu.
+        Implementasi retry logic dengan {" "}
+        <InlineCode>exponential backoff</InlineCode> saat menerima status {" "}
+        <InlineCode>429</InlineCode>.
       </Callout>
     </section>
   );

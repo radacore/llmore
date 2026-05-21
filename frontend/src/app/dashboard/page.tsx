@@ -9,9 +9,6 @@ import {
   Activity,
   Flame,
   Package,
-  Key,
-  ArrowUpCircle,
-  Plus,
   ArrowRight,
   Loader2,
   AlertCircle,
@@ -118,10 +115,10 @@ export default function DashboardOverviewPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Token Balance */}
+        {/* Credit Balance */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-dim-grey">Sisa Token</p>
+            <p className="text-sm font-medium text-dim-grey">Sisa Credit</p>
             <div className="p-2 bg-royal-blue/10 rounded-xl">
               <Coins className="h-5 w-5 text-royal-blue" />
             </div>
@@ -174,11 +171,11 @@ export default function DashboardOverviewPage() {
           </p>
         </div>
 
-        {/* Tokens Used */}
+        {/* Credits Used */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-dim-grey">
-              Token Terpakai Bulan Ini
+              Credit Terpakai Bulan Ini
             </p>
             <div className="p-2 bg-orange-50 rounded-xl">
               <Flame className="h-5 w-5 text-orange-600" />
@@ -192,7 +189,7 @@ export default function DashboardOverviewPage() {
             </p>
           )}
           <p className="mt-2 text-xs text-silver-mist">
-            dari {formatNumber(tokenQuota)} kuota
+            dari {formatNumber(tokenQuota)} credit
           </p>
         </div>
 
@@ -209,7 +206,7 @@ export default function DashboardOverviewPage() {
           ) : subscription ? (
             <>
               <p className="text-2xl font-bold text-washed-black">
-                {subscription?.plan?.name ?? "Free"}
+                {subscription?.plan?.name ?? "-"}
               </p>
               <div className="mt-2">
                 <Badge variant={statusBadgeVariant}>
@@ -230,7 +227,7 @@ export default function DashboardOverviewPage() {
         {/* Usage Chart */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <h2 className="text-lg font-semibold text-washed-black mb-4">
-            Penggunaan Token (7 Hari Terakhir)
+            Penggunaan Credit (7 Hari Terakhir)
           </h2>
           {usageLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -258,7 +255,7 @@ export default function DashboardOverviewPage() {
                     }}
                     formatter={(value) => [
                       formatNumber(Number(value)),
-                      "Token",
+                      "Credit",
                     ]}
                   />
                   <Line
@@ -326,7 +323,7 @@ export default function DashboardOverviewPage() {
                     <p className="text-sm font-medium text-washed-black truncate">
                       {tx.type === "subscription"
                         ? `Langganan ${tx.plan?.name ?? ""}`
-                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
+                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
                     </p>
                     <p className="text-xs text-silver-mist mt-0.5">
                       {tx.order_id} · {formatRelativeTime(tx.created_at)}

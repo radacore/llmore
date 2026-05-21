@@ -9,14 +9,14 @@ const steps = [
     title: "Register akun",
     body: (
       <>
-        Buat akun gratis di{" "}
+        Buat akun di{" "}
         <Link
           href="/register"
           className="text-[#1009f6] font-bold hover:underline"
         >
           halaman registrasi
         </Link>
-        . Tanpa kartu kredit.
+        . Pilih paket credit sesuai kebutuhan.
       </>
     ),
   },

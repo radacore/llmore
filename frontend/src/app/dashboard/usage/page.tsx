@@ -86,7 +86,7 @@ export default function UsagePage() {
           Usage Analytics
         </h1>
         <p className="mt-1 text-dim-grey">
-          Pantau penggunaan token dan request API Anda
+          Pantau penggunaan credit dan request API Anda
         </p>
       </div>
 
@@ -115,7 +115,7 @@ export default function UsagePage() {
               <Zap className="h-4 w-4 text-royal-blue" />
             </div>
             <span className="text-xs font-medium text-dim-grey uppercase tracking-wider">
-              Total Tokens
+              Total Credit
             </span>
           </div>
           {isLoading ? (
@@ -151,7 +151,7 @@ export default function UsagePage() {
               <TrendingUp className="h-4 w-4 text-orange-600" />
             </div>
             <span className="text-xs font-medium text-dim-grey uppercase tracking-wider">
-              Avg Token/Request
+              Avg Credit/Request
             </span>
           </div>
           {isLoading ? (
@@ -185,10 +185,10 @@ export default function UsagePage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Token Usage Area Chart */}
+        {/* Credit Usage Area Chart */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <h2 className="text-lg font-semibold text-washed-black mb-4">
-            Token Usage per Hari
+            Credit Usage per Hari
           </h2>
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -220,7 +220,7 @@ export default function UsagePage() {
                       border: '1px solid #e5e7eb',
                       boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
                     }}
-                    formatter={(value) => [formatNumber(Number(value)), 'Token']}
+                    formatter={(value) => [formatNumber(Number(value)), 'Credit']}
                   />
                   <Area
                     type="monotone"
@@ -289,11 +289,11 @@ export default function UsagePage() {
         </div>
       </div>
 
-      {/* Quota Info Card */}
+      {/* Credit Info Card */}
       <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
         <h2 className="text-lg font-semibold text-washed-black mb-4 flex items-center gap-2">
           <Coins className="h-5 w-5 text-royal-blue" />
-          Informasi Kuota
+          Informasi Credit
         </h2>
 
         {isLoading ? (
@@ -308,7 +308,7 @@ export default function UsagePage() {
             <div className="md:col-span-2">
               <div className="flex items-center justify-between text-sm mb-2">
                 <span className="text-dim-grey">
-                  {formatNumber(tokenUsed)} / {formatNumber(tokenQuota)} token
+                  {formatNumber(tokenUsed)} / {formatNumber(tokenQuota)} credit
                 </span>
                 <span className="font-medium text-washed-black">
                   {Math.round(usagePercentage)}% terpakai
@@ -332,10 +332,10 @@ export default function UsagePage() {
               </div>
             </div>
 
-            {/* Quota Details */}
+            {/* Credit Details */}
             <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
-                <span className="text-sm text-dim-grey">Sisa Token</span>
+                <span className="text-sm text-dim-grey">Sisa Credit</span>
                 <span className="text-sm font-semibold text-washed-black">
                   {formatNumber(remainingTokens)}
                 </span>
@@ -343,12 +343,12 @@ export default function UsagePage() {
               <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
                 <span className="text-sm text-dim-grey">Paket</span>
                 <Badge variant={subscription?.status === 'active' ? 'success' : 'default'}>
-                  {subscription?.plan?.name ?? 'Free'}
+                  {subscription?.plan?.name ?? '-'}
                 </Badge>
               </div>
               {usage?.quota_reset_date && (
                 <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
-                  <span className="text-sm text-dim-grey">Reset Kuota</span>
+                  <span className="text-sm text-dim-grey">Reset Credit</span>
                   <span className="text-sm font-medium text-washed-black">
                     {formatDate(usage.quota_reset_date)}
                   </span>

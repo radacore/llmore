@@ -93,7 +93,7 @@ function DocsTopBar({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
             href="/register"
             className="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-[#ffba09] text-ink-black text-[13px] font-bold hover:brightness-95 transition"
           >
-            Mulai gratis
+            Mulai sekarang
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
         </div>

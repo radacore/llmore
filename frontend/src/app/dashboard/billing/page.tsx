@@ -16,8 +16,6 @@ import {
   Clock,
   RefreshCw,
   X,
-  MessageCircle,
-  Mail,
 } from 'lucide-react';
 import { useSubscription } from '@/hooks/useUsage';
 import {
@@ -141,7 +139,7 @@ export default function BillingPage() {
             </div>
             <div className="p-4 bg-pearl rounded-xl">
               <p className="text-xs text-dim-grey font-medium uppercase tracking-wider mb-1">
-                Sisa Token
+                Sisa Credit
               </p>
               <p className="text-lg font-bold text-washed-black">
                 {formatNumber(subscription.remaining_tokens)}
@@ -188,8 +186,6 @@ export default function BillingPage() {
               .map((plan) => {
                 const isCurrentPlan = plan.slug === currentPlanSlug;
                 const isPro = plan.slug === 'pro';
-                const isEnterprise = plan.slug === 'enterprise';
-                const isFree = plan.slug === 'free';
 
                 return (
                   <div
@@ -220,18 +216,16 @@ export default function BillingPage() {
                       )}
                       <div className="mt-4">
                         <span className="text-3xl font-bold text-washed-black">
-                          {isEnterprise ? 'Custom' : plan.price === 0 ? 'Gratis' : formatCurrency(plan.price)}
+                          {formatCurrency(plan.price)}
                         </span>
-                        {plan.price > 0 && !isEnterprise && (
-                          <span className="text-sm text-silver-mist ml-1">/bulan</span>
-                        )}
+                        <span className="text-sm text-silver-mist ml-1">/bulan</span>
                       </div>
                     </div>
 
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-center gap-2 text-sm text-dim-grey">
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        {isEnterprise ? 'Token sesuai kebutuhan' : `${formatNumber(plan.token_quota)} token/bulan`}
+                        {formatNumber(plan.token_quota)} credit/bulan
                       </li>
                       <li className="flex items-center gap-2 text-sm text-dim-grey">
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
@@ -248,29 +242,6 @@ export default function BillingPage() {
                     {isCurrentPlan ? (
                       <Button variant="secondary" className="w-full" disabled>
                         Paket Aktif Anda
-                      </Button>
-                    ) : isEnterprise ? (
-                      <div className="space-y-2">
-                        <a
-                          href="https://wa.me/6281234567890"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-green-600 text-pure-white text-sm font-semibold hover:bg-green-700 transition-colors"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          Hubungi via WhatsApp
-                        </a>
-                        <a
-                          href="mailto:admin@llmore.id"
-                          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-washed-black/10 text-washed-black/80 text-sm font-medium hover:bg-pearl transition-colors"
-                        >
-                          <Mail className="h-4 w-4" />
-                          admin@llmore.id
-                        </a>
-                      </div>
-                    ) : isFree ? (
-                      <Button variant="outline" className="w-full" disabled>
-                        {currentPlanSlug === 'free' ? 'Paket Aktif Anda' : 'Downgrade ke Free'}
                       </Button>
                     ) : (
                       <Button
@@ -343,7 +314,7 @@ export default function BillingPage() {
                       <td className="px-4 py-3 text-sm text-washed-black/80">
                         {tx.type === 'subscription'
                           ? `Langganan ${tx.plan?.name ?? ''}`
-                          : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
+                          : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-washed-black">
                         {formatCurrency(tx.amount)}
@@ -374,7 +345,7 @@ export default function BillingPage() {
                       <p className="text-sm font-medium text-washed-black">
                         {tx.type === 'subscription'
                           ? `Langganan ${tx.plan?.name ?? ''}`
-                          : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
+                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
                       </p>
                       <code className="text-xs text-silver-mist font-mono">{tx.order_id}</code>
                     </div>

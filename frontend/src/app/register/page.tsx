@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ComponentProps } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Mail, Lock, User } from "lucide-react";
@@ -31,7 +31,7 @@ export default function RegisterPage() {
     }
   }, [isAuthenticated, router]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit: NonNullable<ComponentProps<"form">["onSubmit"]> = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -92,11 +92,11 @@ export default function RegisterPage() {
           kamu.
         </>
       }
-      brandSubcopy="Daftar gratis dan dapatkan 1.000 token AI untuk dicoba. Tanpa kartu kredit, tanpa komitmen."
+      brandSubcopy="Daftar dan mulai dengan paket berbasis credit. Bayar pakai QRIS, tanpa kartu kredit luar negeri."
       brandExtras={
         <div className="space-y-3">
-          <BrandBullet>1.000 token gratis untuk eksplorasi</BrandBullet>
-          <BrandBullet>Akses model AI dasar tanpa biaya</BrandBullet>
+          <BrandBullet>Paket Basic berisi 70.000 credit/bulan</BrandBullet>
+          <BrandBullet>Akses model AI melalui credit bulanan</BrandBullet>
           <BrandBullet>Bayar pakai QRIS, bukan kartu kredit</BrandBullet>
         </div>
       }
@@ -107,7 +107,7 @@ export default function RegisterPage() {
           Buat akun baru
         </p>
         <h1 className="text-washed-black font-bold text-[32px] md:text-[40px] leading-[1.1] tracking-tight mb-3">
-          Daftar gratis hari ini.
+          Daftar akun hari ini.
         </h1>
         <p className="text-[14px] text-dim-grey leading-[1.6]">
           Sudah punya akun?{" "}

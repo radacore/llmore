@@ -25,15 +25,15 @@ export function LandingCta() {
               Siap mulai bangun aplikasi AI kamu?
             </h2>
             <p className="mt-5 text-washed-black text-[16px] md:text-[18px] leading-[1.6]">
-              Daftar gratis, dapat 1.000 token AI untuk dicoba. Tanpa kartu
-              kredit, tanpa komitmen.
+              Mulai dari paket Basic dengan 70.000 credit/bulan. Bayar lokal,
+              tanpa kartu kredit luar negeri.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
               <Link
                 href="/register"
                 className="inline-flex items-center justify-center gap-2 px-[28px] py-[16px] rounded-full bg-washed-black text-pure-white font-bold text-[14px] hover:bg-ink-black transition"
               >
-                Buat akun gratis
+                Buat akun
                 <ArrowUpRight className="h-4 w-4" />
               </Link>
               <Link

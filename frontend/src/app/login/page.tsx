@@ -95,7 +95,7 @@ export default function LoginPage() {
             href="/register"
             className="text-[#1009f6] font-bold hover:underline"
           >
-            Daftar gratis
+            Daftar akun
           </Link>
         </p>
 

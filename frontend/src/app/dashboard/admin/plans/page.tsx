@@ -7,7 +7,6 @@ import {
   Edit2,
   Users,
   AlertCircle,
-  Loader2,
 } from 'lucide-react';
 import { AdminGuard } from '@/components/AdminGuard';
 import {
@@ -30,6 +29,7 @@ interface PlanFormData {
   token_quota: string;
   rate_limit_per_minute: string;
   max_api_keys: string;
+  features: string;
   is_active: boolean;
 }
 
@@ -41,6 +41,7 @@ const emptyForm: PlanFormData = {
   token_quota: '',
   rate_limit_per_minute: '',
   max_api_keys: '',
+  features: '',
   is_active: true,
 };
 
@@ -79,6 +80,7 @@ function AdminPlansContent() {
       token_quota: String(plan.token_quota),
       rate_limit_per_minute: String(plan.rate_limit_per_minute),
       max_api_keys: String(plan.max_api_keys),
+      features: plan.features?.join('\n') ?? '',
       is_active: plan.is_active,
     });
     setFormErrors({});
@@ -97,7 +99,7 @@ function AdminPlansContent() {
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) < 0)
       errors.price = 'Price harus angka >= 0';
     if (!form.token_quota || isNaN(Number(form.token_quota)) || Number(form.token_quota) <= 0)
-      errors.token_quota = 'Token quota harus angka > 0';
+      errors.token_quota = 'Credit quota harus angka > 0';
     if (
       !form.rate_limit_per_minute ||
       isNaN(Number(form.rate_limit_per_minute)) ||
@@ -121,6 +123,10 @@ function AdminPlansContent() {
       token_quota: Number(form.token_quota),
       rate_limit_per_minute: Number(form.rate_limit_per_minute),
       max_api_keys: Number(form.max_api_keys),
+      features: form.features
+        .split('\n')
+        .map((feature) => feature.trim())
+        .filter(Boolean),
       is_active: form.is_active,
     };
 
@@ -162,78 +168,86 @@ function AdminPlansContent() {
         </Button>
       </div>
 
-      {/* Plans Grid */}
+      {/* Plans Table */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="bg-pure-white rounded-2xl border border-washed-black/10 overflow-hidden">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="bg-pure-white rounded-2xl border border-washed-black/10 p-6 animate-pulse">
-              <div className="h-6 bg-beige rounded w-2/3 mb-4" />
-              <div className="h-4 bg-beige rounded w-1/2 mb-3" />
-              <div className="h-4 bg-beige rounded w-full mb-2" />
-              <div className="h-4 bg-beige rounded w-3/4 mb-2" />
-              <div className="h-4 bg-beige rounded w-1/2" />
+            <div key={i} className="grid grid-cols-1 md:grid-cols-6 gap-4 p-5 border-b border-washed-black/10 last:border-b-0 animate-pulse">
+              <div className="h-5 bg-beige rounded md:col-span-2" />
+              <div className="h-5 bg-beige rounded" />
+              <div className="h-5 bg-beige rounded" />
+              <div className="h-5 bg-beige rounded" />
+              <div className="h-5 bg-beige rounded" />
             </div>
           ))}
         </div>
       ) : plans && plans.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan.id}
-              className="bg-pure-white rounded-2xl border border-washed-black/10 p-6 hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-lg font-bold text-washed-black">{plan.name}</h3>
-                  <p className="text-sm text-silver-mist font-mono">{plan.slug}</p>
-                </div>
-                <Badge variant={plan.is_active ? 'success' : 'default'}>
-                  {plan.is_active ? 'Active' : 'Inactive'}
-                </Badge>
-              </div>
-
-              <p className="text-2xl font-bold text-royal-blue mb-4">
-                {plan.price === 0 ? 'Gratis' : formatCurrency(plan.price)}
-                {plan.price > 0 && <span className="text-sm font-normal text-silver-mist">/bulan</span>}
-              </p>
-
-              {plan.description && (
-                <p className="text-sm text-dim-grey mb-4">{plan.description}</p>
-              )}
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-dim-grey">Token Quota</span>
-                  <span className="font-medium text-washed-black">{formatNumber(plan.token_quota)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-dim-grey">Rate Limit</span>
-                  <span className="font-medium text-washed-black">{plan.rate_limit_per_minute}/min</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-dim-grey">Max API Keys</span>
-                  <span className="font-medium text-washed-black">{plan.max_api_keys}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-dim-grey">Active Subs</span>
-                  <span className="font-medium text-washed-black flex items-center gap-1">
-                    <Users className="h-3.5 w-3.5 text-silver-mist" />
-                    {formatNumber(plan.active_subscriptions_count)}
-                  </span>
-                </div>
-              </div>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full"
-                onClick={() => openEditModal(plan)}
-                leftIcon={<Edit2 className="h-3.5 w-3.5" />}
-              >
-                Edit Plan
-              </Button>
-            </div>
-          ))}
+        <div className="bg-pure-white rounded-2xl border border-washed-black/10 overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[900px] text-left">
+              <thead className="bg-pearl border-b border-washed-black/10">
+                <tr>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Plan</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Harga</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Credit Quota</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Rate Limit</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">API Keys</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Active Subs</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Status</th>
+                  <th className="px-5 py-4 text-right text-xs font-semibold text-dim-grey uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-washed-black/10">
+                {plans.map((plan) => (
+                  <tr key={plan.id} className="hover:bg-pearl/60 transition-colors">
+                    <td className="px-5 py-4 align-top">
+                      <div>
+                        <p className="font-bold text-washed-black">{plan.name}</p>
+                        <p className="text-xs text-silver-mist font-mono">{plan.slug}</p>
+                        {plan.description && (
+                          <p className="mt-1 text-sm text-dim-grey max-w-xs">{plan.description}</p>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-5 py-4 text-sm font-semibold text-washed-black whitespace-nowrap">
+                      {formatCurrency(plan.price)}
+                      <span className="text-xs font-normal text-silver-mist">/bulan</span>
+                    </td>
+                    <td className="px-5 py-4 text-sm font-semibold text-washed-black whitespace-nowrap">
+                      {formatNumber(plan.token_quota)}
+                    </td>
+                    <td className="px-5 py-4 text-sm text-washed-black/80 whitespace-nowrap">
+                      {plan.rate_limit_per_minute}/min
+                    </td>
+                    <td className="px-5 py-4 text-sm text-washed-black/80 whitespace-nowrap">
+                      {plan.max_api_keys}
+                    </td>
+                    <td className="px-5 py-4 text-sm font-medium text-washed-black whitespace-nowrap">
+                      <span className="flex items-center gap-1">
+                        <Users className="h-3.5 w-3.5 text-silver-mist" />
+                        {formatNumber(plan.active_subscriptions_count)}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 whitespace-nowrap">
+                      <Badge variant={plan.is_active ? 'success' : 'default'}>
+                        {plan.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </td>
+                    <td className="px-5 py-4 text-right whitespace-nowrap">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditModal(plan)}
+                        leftIcon={<Edit2 className="h-3.5 w-3.5" />}
+                      >
+                        Edit
+                      </Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-16 text-center">
@@ -301,9 +315,9 @@ function AdminPlansContent() {
               error={formErrors.price}
             />
             <Input
-              label="Token Quota"
+              label="Credit Quota"
               type="number"
-              placeholder="e.g. 100000"
+              placeholder="e.g. 150000"
               value={form.token_quota}
               onChange={(e) => handleChange('token_quota', e.target.value)}
               error={formErrors.token_quota}
@@ -327,6 +341,26 @@ function AdminPlansContent() {
               onChange={(e) => handleChange('max_api_keys', e.target.value)}
               error={formErrors.max_api_keys}
             />
+          </div>
+
+          <div>
+            <label
+              htmlFor="plan-features"
+              className="block text-sm font-medium text-washed-black/80 mb-1.5"
+            >
+              Detail Card Features
+            </label>
+            <textarea
+              id="plan-features"
+              rows={5}
+              placeholder="Tulis satu detail card per baris"
+              value={form.features}
+              onChange={(e) => handleChange('features', e.target.value)}
+              className="w-full rounded-xl border border-silver-mist bg-pure-white px-4 py-3 text-washed-black placeholder:text-silver-mist focus:border-transparent focus:outline-none focus:ring-2 focus:ring-royal-blue"
+            />
+            <p className="mt-1.5 text-sm text-dim-grey">
+              Satu baris menjadi satu bullet di card pricing landing.
+            </p>
           </div>
 
           {/* Toggle Active */}

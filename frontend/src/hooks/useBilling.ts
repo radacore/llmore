@@ -9,6 +9,7 @@ export interface Plan {
   price: number;
   token_quota: number;
   rate_limit_per_minute: number;
+  max_api_keys: number;
   features: string[] | null;
   is_active: boolean;
   created_at: string;
@@ -94,6 +95,7 @@ export function usePurchasePlan() {
       return res.data.data ?? res.data;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['plans'] });
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
       queryClient.invalidateQueries({ queryKey: ['usage-summary'] });
