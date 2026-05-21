@@ -21,6 +21,7 @@ class TransactionResource extends JsonResource
             'order_id' => $this->order_id,
             'type' => $type,
             'token_amount' => $type === 'subscription' ? $this->plan?->token_quota : null,
+            'credit_amount' => $type === 'subscription' ? $this->plan?->token_quota : null,
             'plan' => [
                 'name' => $this->plan->name,
                 'slug' => $this->plan->slug,

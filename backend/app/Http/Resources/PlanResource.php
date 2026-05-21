@@ -26,6 +26,7 @@ class PlanResource extends JsonResource
             'description' => $this->description,
             'price' => $this->price,
             'token_quota' => $this->token_quota,
+            'credit_quota' => $this->token_quota,
             'rate_limit_per_minute' => $this->rate_limit_per_minute,
             'max_api_keys' => $this->max_api_keys,
             'features' => $features,

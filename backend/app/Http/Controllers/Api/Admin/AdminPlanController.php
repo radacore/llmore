@@ -11,11 +11,14 @@ use Illuminate\Http\Request;
 class AdminPlanController extends Controller
 {
     /**
-     * Return semua plans (termasuk inactive) dengan count active subscriptions.
+     * Return official plans dengan count active subscriptions.
      */
     public function index(): JsonResponse
     {
+        Plan::syncOfficialPricingPlans();
+
         $plans = Plan::withCount(['subscriptions' => fn ($q) => $q->where('status', 'active')])
+            ->whereIn('slug', Plan::officialPricingSlugs())
             ->orderBy('sort_order')
             ->get();
 

@@ -26,6 +26,7 @@ class AdminDashboardController extends Controller
     {
         $now = now();
         $lastMonth = now()->subMonth();
+        Plan::syncOfficialPricingPlans();
 
         // Subquery: ID user non-admin (digunakan untuk exclude admin dari semua metrik user-centric)
         $nonAdminUserIds = User::where("role", "!=", "admin")->pluck("id");
@@ -77,10 +78,13 @@ class AdminDashboardController extends Controller
                         ->where("status", "active")
                         ->whereIn("user_id", $nonAdminUserIds),
                 ])
+                    ->whereIn("slug", Plan::officialPricingSlugs())
+                    ->orderBy("sort_order")
                     ->get()
                     ->map(
                         fn($p) => [
                             "name" => $p->name,
+                            "slug" => $p->slug,
                             "active_subscriptions" => $p->subscriptions_count,
                         ],
                     ),

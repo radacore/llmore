@@ -35,7 +35,12 @@ class BillingController extends Controller
      */
     public function plans(): AnonymousResourceCollection
     {
-        $plans = Plan::active()->orderBy('sort_order')->get();
+        Plan::syncOfficialPricingPlans();
+
+        $plans = Plan::active()
+            ->whereIn('slug', Plan::officialPricingSlugs())
+            ->orderBy('sort_order')
+            ->get();
 
         return PlanResource::collection($plans);
     }
@@ -55,17 +60,17 @@ class BillingController extends Controller
 
         $plan = Plan::where('slug', $request->plan_slug)->first();
 
-        // Plan free tidak perlu dibeli
+        // Legacy free plan tidak perlu dibeli
         if ($plan->slug === 'free') {
             return response()->json([
-                'message' => 'Paket Free tidak perlu dibeli.',
+                'message' => 'Paket ini tidak perlu dibeli.',
             ], 422);
         }
 
-        // Plan enterprise harus custom/contact sales
+        // Legacy enterprise plan harus custom/contact sales
         if ($plan->slug === 'enterprise') {
             return response()->json([
-                'message' => 'Paket Enterprise memerlukan penawaran khusus. Silakan hubungi tim sales.',
+                'message' => 'Paket custom memerlukan penawaran khusus. Silakan hubungi tim sales.',
             ], 422);
         }
 
