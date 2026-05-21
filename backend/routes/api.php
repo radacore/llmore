@@ -94,6 +94,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'active', 'admin'])->group(f
     Route::get('/users/{id}', [AdminUserController::class, 'show']);
     Route::put('/users/{id}/status', [AdminUserController::class, 'updateStatus']);
     Route::put('/users/{id}/role', [AdminUserController::class, 'updateRole']);
+    Route::delete('/users/{id}', [AdminUserController::class, 'destroy']);
     Route::post('/users/{id}/quota', [AdminUserController::class, 'adjustQuota']);
     Route::post('/users/{id}/activate-enterprise', [AdminUserController::class, 'activateEnterprise']);
 

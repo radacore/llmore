@@ -216,7 +216,49 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Adjust token quota untuk user tertentu.
+     * Hapus user biasa beserta data terkaitnya.
+     *
+     * Aturan:
+     * - Admin tidak bisa menghapus akun sendiri.
+     * - Akun admin lain tidak bisa dihapus dari endpoint ini.
+     * - API key aktif dihapus dari Redis sebelum data user cascade-delete.
+     */
+    public function destroy(Request $request, string $id): JsonResponse
+    {
+        $user = User::with("apiKeys")->findOrFail($id);
+
+        if ((int) $id === $request->user()->id) {
+            return response()->json(
+                [
+                    "message" => "Anda tidak dapat menghapus akun Anda sendiri.",
+                ],
+                403,
+            );
+        }
+
+        if ($user->role === "admin") {
+            return response()->json(
+                [
+                    "message" => "User dengan role admin tidak dapat dihapus dari halaman ini.",
+                ],
+                403,
+            );
+        }
+
+        foreach ($user->apiKeys as $apiKey) {
+            $this->apiKeyCacheService->invalidateKey($apiKey);
+        }
+
+        $user->tokens()->delete();
+        $user->delete();
+
+        return response()->json([
+            "message" => "User berhasil dihapus.",
+        ]);
+    }
+
+    /**
+     * Adjust credit quota untuk user tertentu.
      * Amount bisa positif (tambah) atau negatif (kurangi).
      */
     public function adjustQuota(Request $request, string $id): JsonResponse
@@ -267,7 +309,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Activate Enterprise plan untuk user tertentu.
+     * Activate custom credit plan untuk user tertentu.
      * Hanya bisa dilakukan oleh admin secara manual.
      */
     public function activateEnterprise(
@@ -288,7 +330,7 @@ class AdminUserController extends Controller
 
         if (!$enterprisePlan) {
             return response()->json(
-                ["error" => "Enterprise plan not found"],
+                ["error" => "Custom credit plan not found"],
                 404,
             );
         }
@@ -298,7 +340,7 @@ class AdminUserController extends Controller
             ->where("status", "active")
             ->update(["status" => "expired"]);
 
-        // Create enterprise subscription
+        // Create custom credit subscription
         $subscription = Subscription::create([
             "user_id" => $user->id,
             "plan_id" => $enterprisePlan->id,
@@ -313,7 +355,7 @@ class AdminUserController extends Controller
         $this->quotaService->initializeQuota($subscription);
 
         return response()->json([
-            "message" => "Enterprise plan activated successfully",
+            "message" => "Custom credit plan activated successfully",
             "subscription" => $subscription->load("plan"),
         ]);
     }
