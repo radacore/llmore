@@ -48,6 +48,16 @@ const emptyForm: PlanFormData = {
   is_active: true,
 };
 
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export default function AdminPlansPage() {
   return (
     <AdminGuard>
@@ -136,14 +146,19 @@ function AdminPlansContent() {
   };
 
   const handleChange = (field: keyof PlanFormData, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [field]: value }));
+    setForm((prev) => {
+      const next = { ...prev, [field]: value };
+      if (field === 'name' && !editingPlan && typeof value === 'string') {
+        next.slug = slugify(value);
+      }
+      return next;
+    });
     setFormErrors((prev) => ({ ...prev, [field]: undefined }));
   };
 
   const validate = (): boolean => {
     const errors: Partial<Record<keyof PlanFormData, string>> = {};
     if (!form.name.trim()) errors.name = 'Name wajib diisi';
-    if (!form.slug.trim()) errors.slug = 'Slug wajib diisi';
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) < 0)
       errors.price = 'Price harus angka >= 0';
     if (!form.token_quota || isNaN(Number(form.token_quota)) || Number(form.token_quota) <= 0)
@@ -165,7 +180,7 @@ function AdminPlansContent() {
 
     const payload = {
       name: form.name.trim(),
-      slug: form.slug.trim(),
+      slug: form.slug.trim() || slugify(form.name),
       description: form.description.trim() || null,
       price: Number(form.price),
       token_quota: Number(form.token_quota),
@@ -341,22 +356,13 @@ function AdminPlansContent() {
         }
       >
         <div className="p-6 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Input
-              label="Name"
-              placeholder="e.g. Pro Plan"
-              value={form.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              error={formErrors.name}
-            />
-            <Input
-              label="Slug"
-              placeholder="e.g. pro"
-              value={form.slug}
-              onChange={(e) => handleChange('slug', e.target.value)}
-              error={formErrors.slug}
-            />
-          </div>
+          <Input
+            label="Name"
+            placeholder="e.g. Pro Plan"
+            value={form.name}
+            onChange={(e) => handleChange('name', e.target.value)}
+            error={formErrors.name}
+          />
 
           <Input
             label="Description"
@@ -423,27 +429,28 @@ function AdminPlansContent() {
             </p>
           </div>
 
-          {/* Toggle Active */}
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              type="button"
-              role="switch"
-              aria-checked={form.is_active}
-              onClick={() => handleChange('is_active', !form.is_active)}
-              className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
-                form.is_active ? 'bg-royal-blue' : 'bg-concrete'
-              }`}
-            >
-              <span
-                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-pure-white shadow ring-0 transition duration-200 ease-in-out ${
-                  form.is_active ? 'translate-x-5' : 'translate-x-0'
+          {editingPlan && (
+            <div className="flex items-center gap-3 pt-2">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={form.is_active}
+                onClick={() => handleChange('is_active', !form.is_active)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out ${
+                  form.is_active ? 'bg-royal-blue' : 'bg-concrete'
                 }`}
-              />
-            </button>
-            <span className="text-sm text-washed-black/80">
-              {form.is_active ? 'Active' : 'Inactive'}
-            </span>
-          </div>
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-pure-white shadow ring-0 transition duration-200 ease-in-out ${
+                    form.is_active ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+              <span className="text-sm text-washed-black/80">
+                {form.is_active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+          )}
         </div>
       </Modal>
 
