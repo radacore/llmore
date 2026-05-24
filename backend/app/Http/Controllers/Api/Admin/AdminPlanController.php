@@ -110,4 +110,49 @@ class AdminPlanController extends Controller
             'data' => new PlanResource($plan->fresh()),
         ]);
     }
+
+    /**
+     * Hapus plan custom.
+     *
+     * Invariants yang dijaga:
+     * - Plan official TIDAK pernah bisa dihapus (anchor untuk sync). Admin
+     *   yang ingin "menyembunyikan" plan official cukup set is_active=false.
+     * - Plan dengan subscription aktif ditolak (mencegah orphan billing).
+     * - Plan dengan riwayat subscription/transaction apa pun ditolak agar
+     *   audit trail historis tetap utuh. DB sendiri juga ON DELETE RESTRICT,
+     *   tapi check eksplisit di sini memberi pesan ramah ke admin.
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        $plan = Plan::withCount(['subscriptions', 'transactions'])->findOrFail($id);
+
+        if ($plan->is_official) {
+            return response()->json([
+                'message' => 'Plan official tidak dapat dihapus. Set is_active=false untuk menyembunyikan plan dari publik.',
+            ], 422);
+        }
+
+        $activeSubscriptions = $plan->subscriptions()
+            ->where('status', 'active')
+            ->count();
+
+        if ($activeSubscriptions > 0) {
+            return response()->json([
+                'message' => "Plan masih dipakai oleh {$activeSubscriptions} subscription aktif. Tunggu sampai semua subscription berakhir, atau migrasikan dulu user ke plan lain.",
+            ], 422);
+        }
+
+        if ($plan->subscriptions_count > 0 || $plan->transactions_count > 0) {
+            return response()->json([
+                'message' => "Plan punya riwayat {$plan->subscriptions_count} subscription dan {$plan->transactions_count} transaksi. Hapus akan merusak audit trail; set is_active=false saja.",
+            ], 422);
+        }
+
+        $planName = $plan->name;
+        $plan->delete();
+
+        return response()->json([
+            'message' => "Plan \"{$planName}\" berhasil dihapus.",
+        ]);
+    }
 }

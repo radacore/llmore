@@ -7,12 +7,15 @@ import {
   Edit2,
   Users,
   AlertCircle,
+  Trash2,
+  AlertTriangle,
 } from 'lucide-react';
 import { AdminGuard } from '@/components/AdminGuard';
 import {
   useAdminPlans,
   useCreatePlan,
   useUpdatePlan,
+  useDeletePlan,
   type AdminPlan,
 } from '@/hooks/useAdmin';
 import { Badge } from '@/components/ui/Badge';
@@ -57,11 +60,56 @@ function AdminPlansContent() {
   const { data: plans, isLoading, error } = useAdminPlans();
   const createPlan = useCreatePlan();
   const updatePlan = useUpdatePlan();
+  const deletePlan = useDeletePlan();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<AdminPlan | null>(null);
   const [form, setForm] = useState<PlanFormData>(emptyForm);
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof PlanFormData, string>>>({});
+
+  // Konfirmasi delete: admin wajib ketik ulang nama plan persis untuk
+  // mengaktifkan tombol Hapus. Cegah delete tidak sengaja, terutama untuk
+  // plan dengan banyak relasi historis.
+  const [deleteTarget, setDeleteTarget] = useState<AdminPlan | null>(null);
+  const [confirmName, setConfirmName] = useState('');
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const openDeleteModal = (plan: AdminPlan) => {
+    setDeleteTarget(plan);
+    setConfirmName('');
+    setDeleteError(null);
+  };
+
+  const closeDeleteModal = () => {
+    if (deletePlan.isPending) return;
+    setDeleteTarget(null);
+    setConfirmName('');
+    setDeleteError(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (confirmName !== deleteTarget.name) return;
+
+    setDeleteError(null);
+    deletePlan.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null);
+        setConfirmName('');
+      },
+      onError: (err: unknown) => {
+        const axiosErr = err as {
+          response?: { data?: { message?: string } };
+          message?: string;
+        };
+        setDeleteError(
+          axiosErr.response?.data?.message ??
+            axiosErr.message ??
+            'Gagal menghapus plan. Coba lagi.',
+        );
+      },
+    });
+  };
 
   const openCreateModal = () => {
     setEditingPlan(null);
@@ -239,14 +287,28 @@ function AdminPlansContent() {
                       </Badge>
                     </td>
                     <td className="px-5 py-4 text-right whitespace-nowrap">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditModal(plan)}
-                        leftIcon={<Edit2 className="h-3.5 w-3.5" />}
-                      >
-                        Edit
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditModal(plan)}
+                          leftIcon={<Edit2 className="h-3.5 w-3.5" />}
+                        >
+                          Edit
+                        </Button>
+                        {!plan.is_official && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => openDeleteModal(plan)}
+                            leftIcon={
+                              <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                            }
+                          >
+                            <span className="text-red-600">Hapus</span>
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -399,6 +461,109 @@ function AdminPlansContent() {
             </span>
           </div>
         </div>
+      </Modal>
+
+      <Modal
+        isOpen={deleteTarget !== null}
+        onClose={closeDeleteModal}
+        title="Konfirmasi Hapus Plan"
+        size="md"
+        footer={
+          <>
+            <Button
+              variant="outline"
+              onClick={closeDeleteModal}
+              disabled={deletePlan.isPending}
+            >
+              Batal
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmDelete}
+              isLoading={deletePlan.isPending}
+              disabled={
+                !deleteTarget ||
+                confirmName !== deleteTarget.name ||
+                deletePlan.isPending
+              }
+              leftIcon={<Trash2 className="h-4 w-4" />}
+            >
+              Hapus Permanen
+            </Button>
+          </>
+        }
+      >
+        {deleteTarget && (
+          <div className="space-y-5 p-6">
+            <div className="flex gap-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100">
+                <AlertTriangle className="h-5 w-5 text-red-600" />
+              </div>
+              <div>
+                <p className="font-semibold text-washed-black">
+                  Tindakan ini akan menghapus plan secara permanen.
+                </p>
+                <p className="mt-1 text-sm leading-6 text-dim-grey">
+                  Plan yang sudah dihapus tidak bisa dikembalikan. Pastikan
+                  tidak ada subscription atau transaksi yang masih
+                  membutuhkannya.
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-washed-black/10 bg-pearl p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-dim-grey">
+                Plan yang akan dihapus
+              </p>
+              <div className="mt-3 space-y-1.5">
+                <p className="font-semibold text-washed-black">
+                  {deleteTarget.name}{' '}
+                  <span className="font-mono text-xs text-silver-mist">
+                    ({deleteTarget.slug})
+                  </span>
+                </p>
+                <p className="text-sm text-dim-grey">
+                  Harga: {formatCurrency(deleteTarget.price)} / bulan
+                </p>
+                <p className="text-sm text-dim-grey">
+                  Subscription aktif:{' '}
+                  <span
+                    className={
+                      deleteTarget.active_subscriptions_count > 0
+                        ? 'font-semibold text-red-600'
+                        : 'font-semibold text-washed-black'
+                    }
+                  >
+                    {formatNumber(deleteTarget.active_subscriptions_count)}
+                  </span>
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-washed-black mb-2">
+                Ketik <span className="font-bold">{deleteTarget.name}</span>{' '}
+                untuk konfirmasi
+              </label>
+              <Input
+                value={confirmName}
+                onChange={(e) => setConfirmName(e.target.value)}
+                placeholder={deleteTarget.name}
+                autoComplete="off"
+              />
+              <p className="mt-1.5 text-xs text-silver-mist">
+                Tombol Hapus akan aktif setelah nama plan diketik persis sama
+                (case-sensitive).
+              </p>
+            </div>
+
+            {deleteError && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {deleteError}
+              </div>
+            )}
+          </div>
+        )}
       </Modal>
     </div>
   );

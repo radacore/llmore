@@ -336,6 +336,19 @@ export function useUpdatePlan() {
   });
 }
 
+export function useDeletePlan() {
+  const queryClient = useQueryClient();
+  return useMutation<void, Error, number>({
+    mutationFn: async (id) => {
+      await api.delete(`/admin/plans/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "plans"] });
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
+    },
+  });
+}
+
 // ─── System Health ────────────────────────────────────────────────────────────
 
 export function useSystemHealth() {

@@ -106,6 +106,7 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'active', 'admin'])->group(f
     Route::get('/plans', [AdminPlanController::class, 'index']);
     Route::post('/plans', [AdminPlanController::class, 'store']);
     Route::put('/plans/{id}', [AdminPlanController::class, 'update']);
+    Route::delete('/plans/{id}', [AdminPlanController::class, 'destroy']);
 
     // System Health
     Route::get('/system/health', [AdminDashboardController::class, 'health']);
