@@ -5,7 +5,6 @@ import {
   Package,
   Plus,
   Edit2,
-  Users,
   AlertCircle,
   Trash2,
   AlertTriangle,
@@ -255,7 +254,6 @@ function AdminPlansContent() {
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Credit Quota</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Rate Limit</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">API Keys</th>
-                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Active Subs</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Status</th>
                   <th className="px-5 py-4 text-right text-xs font-semibold text-dim-grey uppercase tracking-wider">Action</th>
                 </tr>
@@ -284,12 +282,6 @@ function AdminPlansContent() {
                     </td>
                     <td className="px-5 py-4 text-sm text-washed-black/80 whitespace-nowrap">
                       {plan.max_api_keys}
-                    </td>
-                    <td className="px-5 py-4 text-sm font-medium text-washed-black whitespace-nowrap">
-                      <span className="flex items-center gap-1">
-                        <Users className="h-3.5 w-3.5 text-silver-mist" />
-                        {formatNumber(plan.active_subscriptions_count)}
-                      </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <Badge variant={plan.is_active ? 'success' : 'default'}>
