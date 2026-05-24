@@ -289,7 +289,6 @@ function AdminPlansContent() {
                     <td className="px-5 py-4 align-top">
                       <div>
                         <p className="font-bold text-washed-black">{plan.name}</p>
-                        <p className="text-xs text-silver-mist font-mono">{plan.slug}</p>
                         {plan.description && (
                           <p className="mt-1 text-sm text-dim-grey max-w-xs">{plan.description}</p>
                         )}
