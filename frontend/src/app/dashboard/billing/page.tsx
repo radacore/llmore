@@ -23,12 +23,14 @@ import {
   useTransactions,
   usePurchasePlan,
   useCheckPaymentStatus,
+  isFreeActivation,
   type QrisPaymentData,
 } from '@/hooks/useBilling';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { Modal } from '@/components/ui/Modal';
 import { formatNumber, formatCurrency, formatDate } from '@/lib/utils';
+import { toast } from '@/stores/toastStore';
 
 export default function BillingPage() {
   const { data: subscription, isLoading: subLoading } = useSubscription();
@@ -61,10 +63,25 @@ export default function BillingPage() {
     setPaymentError(null);
     try {
       const result = await purchaseMutation.mutateAsync({ plan_slug: planSlug });
+
+      if (isFreeActivation(result)) {
+        toast.success(
+          'Paket gratis aktif',
+          `Paket ${result.plan.name} berhasil diaktifkan.`
+        );
+        return;
+      }
+
       setPaymentData(result);
       setShowPaymentModal(true);
-    } catch {
-      // Error handled by mutation
+    } catch (err) {
+      const message =
+        (err as { response?: { data?: { message?: string } }; message?: string })
+          ?.response?.data?.message ??
+        (err as Error)?.message ??
+        'Gagal memproses pembelian.';
+      setPaymentError(message);
+      toast.error('Gagal berlangganan', message);
     }
   };
 
@@ -142,12 +159,12 @@ export default function BillingPage() {
                 Sisa Credit
               </p>
               <p className="text-lg font-bold text-washed-black">
-                {formatNumber(subscription.remaining_tokens)}
+                {formatNumber(subscription.remaining_tokens ?? 0)}
               </p>
               <div className="w-full bg-concrete rounded-full h-1.5 mt-2">
                 <div
                   className="bg-royal-blue h-1.5 rounded-full"
-                  style={{ width: `${Math.min(subscription.usage_percentage, 100)}%` }}
+                  style={{ width: `${Math.min(subscription.usage_percentage ?? 0, 100)}%` }}
                 />
               </div>
             </div>

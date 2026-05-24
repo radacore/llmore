@@ -45,9 +45,24 @@ export interface QrisPaymentData {
   expired_at: string;
   signature: string | null;
   transaction_id: number;
+  free?: false;
 }
 
-export interface PurchaseResponse extends QrisPaymentData {}
+// Free plan langsung aktif tanpa lewat QRIS (price <= 0)
+export interface FreeActivationData {
+  free: true;
+  order_id: string;
+  transaction_id: number;
+  plan: Plan;
+}
+
+export type PurchaseResponse = QrisPaymentData | FreeActivationData;
+
+export function isFreeActivation(
+  data: PurchaseResponse
+): data is FreeActivationData {
+  return data.free === true;
+}
 
 export interface PaymentStatusResponse {
   order_id: string;

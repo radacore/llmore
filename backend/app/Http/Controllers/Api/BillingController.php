@@ -64,12 +64,6 @@ class BillingController extends Controller
             ], 422);
         }
 
-        if ($plan->price <= 0) {
-            return response()->json([
-                'message' => 'Paket ini tidak perlu dibeli.',
-            ], 422);
-        }
-
         $user = $request->user();
 
         // Cek apakah user sudah punya subscription active ke plan yang sama
@@ -84,10 +78,54 @@ class BillingController extends Controller
             ], 422);
         }
 
-        try {
-            // Generate order_id: LLM-{userId}-{timestamp}-{random4digit}
-            $orderId = 'LLM-' . $user->id . '-' . time() . '-' . str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+        // Generate order_id: LLM-{userId}-{timestamp}-{random4digit}
+        $orderId = 'LLM-' . $user->id . '-' . time() . '-' . str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
 
+        // Plan gratis (price <= 0) → aktivasi langsung tanpa KlikQRIS.
+        // Lewati gateway pembayaran, buat transaksi status=paid amount=0,
+        // lalu panggil handlePaymentSuccess agar Subscription + Redis quota
+        // ter-setup pakai flow yang sama dengan pembayaran QRIS sukses.
+        if ($plan->price <= 0) {
+            try {
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'plan_id' => $plan->id,
+                    'order_id' => $orderId,
+                    'amount' => 0,
+                    'status' => 'pending',
+                    'payment_type' => 'free',
+                    'payment_response' => ['note' => 'Free plan, no payment gateway used'],
+                ]);
+
+                $this->handlePaymentSuccess($transaction, [
+                    'status' => 'paid',
+                    'data' => ['order_id' => $orderId],
+                    'note' => 'Free plan auto-activation',
+                ]);
+
+                return response()->json([
+                    'message' => 'Paket gratis berhasil diaktifkan.',
+                    'data' => [
+                        'free' => true,
+                        'order_id' => $orderId,
+                        'transaction_id' => $transaction->id,
+                        'plan' => new PlanResource($plan),
+                    ],
+                ]);
+            } catch (\Exception $e) {
+                Log::error('BillingController: Free plan activation failed', [
+                    'user_id' => $user->id,
+                    'plan_slug' => $plan->slug,
+                    'error' => $e->getMessage(),
+                ]);
+
+                return response()->json([
+                    'message' => 'Gagal mengaktifkan paket gratis. Silakan coba lagi.',
+                ], 500);
+            }
+        }
+
+        try {
             // Buat transaksi via KlikQRIS
             $qrisResult = $this->klikQrisService->createTransaction($user, $plan, $orderId);
 
@@ -297,14 +335,18 @@ class BillingController extends Controller
         }
 
         DB::transaction(function () use ($transaction, $payload) {
-            // Update transaction
-            $transaction->update([
+            // payment_type 'free' diset di flow aktivasi paket gratis dan tidak boleh
+            // dipaksa jadi qris di sini; selain itu default ke qris (alur KlikQRIS).
+            $update = [
                 'status' => 'paid',
                 'paid_at' => now(),
-                'payment_type' => 'qris',
                 'payment_transaction_id' => $payload['data']['order_id'] ?? null,
                 'payment_response' => $payload,
-            ]);
+            ];
+            if ($transaction->payment_type !== 'free') {
+                $update['payment_type'] = 'qris';
+            }
+            $transaction->update($update);
 
             $user = $transaction->user;
             $plan = $transaction->plan;
