@@ -2,7 +2,7 @@ import { SectionHeading } from "../DocsTextHelpers";
 import { CodeBlock } from "../CodeBlock";
 
 const USAGE_CMD = `curl https://api.llmora.id/v1/usage \
-  -H "Authorization: Bearer llm_sk_YOUR_KEY"`;
+  -H "Authorization: Bearer llmora_YOUR_KEY"`;
 
 const USAGE_RESPONSE = `{
   "plan": "basic",

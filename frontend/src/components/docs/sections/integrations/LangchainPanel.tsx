@@ -8,7 +8,7 @@ from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
     base_url="https://api.llmora.id/v1",
-    api_key="llm_sk_YOUR_KEY",
+    api_key="llmora_YOUR_KEY",
     model="anthropic/claude-haiku-4-5",
     max_tokens=1024,
     temperature=0.7,
@@ -33,7 +33,7 @@ const STREAMING = `from langchain_openai import ChatOpenAI
 
 llm = ChatOpenAI(
     base_url="https://api.llmora.id/v1",
-    api_key="llm_sk_YOUR_KEY",
+    api_key="llmora_YOUR_KEY",
     model="anthropic/claude-haiku-4-5",
     streaming=True,
 )
@@ -48,7 +48,7 @@ from langchain_core.output_parsers import StrOutputParser
 
 llm = ChatOpenAI(
     base_url="https://api.llmora.id/v1",
-    api_key="llm_sk_YOUR_KEY",
+    api_key="llmora_YOUR_KEY",
     model="anthropic/claude-haiku-4-5",
 )
 

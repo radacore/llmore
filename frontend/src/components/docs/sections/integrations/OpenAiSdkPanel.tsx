@@ -9,7 +9,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.llmora.id/v1",  # Ganti base URL ke LLMora
-    api_key="llm_sk_YOUR_KEY",            # Gunakan API key LLMora
+    api_key="llmora_YOUR_KEY",            # Gunakan API key LLMora
 )
 
 # Gunakan persis seperti OpenAI SDK biasa
@@ -30,7 +30,7 @@ import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: 'https://api.llmora.id/v1',  // Ganti base URL ke LLMora
-  apiKey: 'llm_sk_YOUR_KEY',            // Gunakan API key LLMora
+  apiKey: 'llmora_YOUR_KEY',            // Gunakan API key LLMora
 });
 
 // Gunakan persis seperti OpenAI SDK biasa

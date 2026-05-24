@@ -20,7 +20,7 @@ const STREAM_JS = `const response = await fetch('https://api.llmora.id/v1/chat/c
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer llm_sk_YOUR_KEY',
+    'Authorization': 'Bearer llmora_YOUR_KEY',
   },
   body: JSON.stringify({
     model: 'anthropic/claude-haiku-4-5',
@@ -53,7 +53,7 @@ const STREAM_PY = `from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.llmora.id/v1",
-    api_key="llm_sk_YOUR_KEY",
+    api_key="llmora_YOUR_KEY",
 )
 
 stream = client.chat.completions.create(

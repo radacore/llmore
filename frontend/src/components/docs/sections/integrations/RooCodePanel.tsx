@@ -68,7 +68,7 @@ export function RooCodePanel() {
                 API Key
               </span>
               <code className="bg-beige text-[#1009f6] px-2.5 py-1 rounded-[4.375px] text-[13px] font-mono border border-silver-mist/40">
-                llm_sk_YOUR_KEY
+                llmora_YOUR_KEY
               </code>
             </div>
           </div>

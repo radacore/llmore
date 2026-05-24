@@ -313,7 +313,7 @@ export default function ModelsPage() {
         </p>
         <pre className="mt-2 p-3 bg-[#0c0c0c] text-green-400 rounded-lg text-xs font-mono overflow-x-auto">
 {`curl -X POST http://localhost:3001/v1/chat/completions \\
-  -H "Authorization: Bearer llm_sk_YOUR_KEY" \\
+  -H "Authorization: Bearer llmora_YOUR_KEY" \\
   -d '{"model": "anthropic/claude-haiku-4-5", "messages": [...]}'`}
         </pre>
       </div>

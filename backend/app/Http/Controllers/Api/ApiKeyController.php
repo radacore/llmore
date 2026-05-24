@@ -56,11 +56,21 @@ class ApiKeyController extends Controller
         if (! $subscription) {
             return response()->json([
                 'error' => 'no_active_subscription',
-                'message' => 'You need an active subscription to create API keys',
+                'message' => 'Anda belum punya paket aktif. Silakan berlangganan terlebih dahulu untuk membuat API key.',
             ], 422);
         }
 
         $subscription->loadMissing('plan');
+
+        // Paket gratis (price <= 0) tidak boleh generate API key.
+        // Free plan hanya buat ekspor fitur dashboard; akses API butuh upgrade ke paket berbayar.
+        if ($subscription->plan->price <= 0) {
+            return response()->json([
+                'error' => 'paid_plan_required',
+                'message' => 'Paket gratis tidak bisa membuat API key. Upgrade ke paket berbayar untuk mengakses API.',
+            ], 422);
+        }
+
         $maxKeys = $subscription->plan->max_api_keys;
 
         // Cek apakah jumlah active keys sudah mencapai limit
@@ -69,12 +79,13 @@ class ApiKeyController extends Controller
         if ($activeKeysCount >= $maxKeys) {
             return response()->json([
                 'error' => 'api_key_limit_reached',
-                'message' => 'Maximum API keys for your plan reached',
+                'message' => 'Jumlah API key sudah mencapai batas paket Anda (' . $maxKeys . ' key).',
             ], 422);
         }
 
-        // Generate API key
-        $rawKey = 'llm_sk_' . bin2hex(random_bytes(24));
+        // Generate API key dengan prefix `llmora_` (brand-aligned).
+        // Format: llmora_ + 48 hex char (24 random bytes) = 55 char total.
+        $rawKey = 'llmora_' . bin2hex(random_bytes(24));
         $prefix = substr($rawKey, 0, 16);
         $hash = hash('sha256', $rawKey);
 

@@ -75,7 +75,7 @@ const providerStyle: Record<string, string> = {
 };
 
 const LIST_MODELS_CMD = `curl https://api.llmora.id/v1/models \\
-  -H "Authorization: Bearer llm_sk_YOUR_KEY"`;
+  -H "Authorization: Bearer llmora_YOUR_KEY"`;
 
 export function ModelsSection() {
   const tabs = useMemo(() => {

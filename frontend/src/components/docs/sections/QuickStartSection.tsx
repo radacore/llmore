@@ -33,7 +33,7 @@ const steps = [
           Dashboard → API Keys
         </Link>{" "}
         dan buat API key baru. Key kamu akan dimulai dengan prefix{" "}
-        <InlineCode>llm_sk_</InlineCode>.
+        <InlineCode>llmora_</InlineCode>.
       </>
     ),
   },
@@ -78,7 +78,7 @@ export function QuickStartSection() {
         language="bash"
         code={`curl https://api.llmora.id/v1/chat/completions \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer llm_sk_YOUR_KEY" \\
+  -H "Authorization: Bearer llmora_YOUR_KEY" \\
   -d '{
     "model": "anthropic/claude-haiku-4-5",
     "messages": [{"role": "user", "content": "Hello! Apa kabar?"}],
@@ -87,7 +87,7 @@ export function QuickStartSection() {
       />
 
       <Callout variant="tip">
-        Ganti <InlineCode>llm_sk_YOUR_KEY</InlineCode> dengan API key asli kamu
+        Ganti <InlineCode>llmora_YOUR_KEY</InlineCode> dengan API key asli kamu
         dari dashboard.
       </Callout>
     </section>

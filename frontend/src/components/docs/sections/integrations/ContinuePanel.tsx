@@ -11,21 +11,21 @@ const CONFIG_JSON = `{
       "provider": "openai",
       "model": "anthropic/claude-haiku-4-5",
       "apiBase": "https://api.llmora.id/v1",
-      "apiKey": "llm_sk_YOUR_KEY"
+      "apiKey": "llmora_YOUR_KEY"
     },
     {
       "title": "LLMora - GPT-4o",
       "provider": "openai",
       "model": "openai/gpt-4o",
       "apiBase": "https://api.llmora.id/v1",
-      "apiKey": "llm_sk_YOUR_KEY"
+      "apiKey": "llmora_YOUR_KEY"
     },
     {
       "title": "LLMora - DeepSeek V3",
       "provider": "openai",
       "model": "deepseek/deepseek-chat-v3-0324",
       "apiBase": "https://api.llmora.id/v1",
-      "apiKey": "llm_sk_YOUR_KEY"
+      "apiKey": "llmora_YOUR_KEY"
     }
   ],
   "tabAutocompleteModel": {
@@ -33,7 +33,7 @@ const CONFIG_JSON = `{
     "provider": "openai",
     "model": "anthropic/claude-haiku-4-5",
     "apiBase": "https://api.llmora.id/v1",
-    "apiKey": "llm_sk_YOUR_KEY"
+    "apiKey": "llmora_YOUR_KEY"
   }
 }`;
 

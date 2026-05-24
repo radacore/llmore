@@ -7,7 +7,7 @@ import { TabSelector } from "../TabSelector";
 
 const CURL = `curl https://api.llmora.id/v1/chat/completions \\
   -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer llm_sk_YOUR_KEY" \\
+  -H "Authorization: Bearer llmora_YOUR_KEY" \\
   -d '{
     "model": "anthropic/claude-haiku-4-5",
     "messages": [
@@ -22,7 +22,7 @@ const PYTHON = `from openai import OpenAI
 
 client = OpenAI(
     base_url="https://api.llmora.id/v1",
-    api_key="llm_sk_YOUR_KEY",
+    api_key="llmora_YOUR_KEY",
 )
 
 response = client.chat.completions.create(
@@ -41,7 +41,7 @@ const JAVASCRIPT = `import OpenAI from 'openai';
 
 const client = new OpenAI({
   baseURL: 'https://api.llmora.id/v1',
-  apiKey: 'llm_sk_YOUR_KEY',
+  apiKey: 'llmora_YOUR_KEY',
 });
 
 const response = await client.chat.completions.create({
@@ -64,7 +64,7 @@ curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_HTTPHEADER => [
         'Content-Type: application/json',
-        'Authorization: Bearer llm_sk_YOUR_KEY',
+        'Authorization: Bearer llmora_YOUR_KEY',
     ],
     CURLOPT_POSTFIELDS => json_encode([
         'model' => 'anthropic/claude-haiku-4-5',

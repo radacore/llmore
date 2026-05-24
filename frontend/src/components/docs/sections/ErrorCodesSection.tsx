@@ -61,7 +61,7 @@ const severityStyle: Record<ErrorEntry["severity"], string> = {
 
 const ERROR_RESPONSE = `{
   "error": {
-    "message": "Invalid API key provided. Your API key must start with 'llm_sk_'.",
+    "message": "Invalid API key provided. Your API key must start with 'llmora_'.",
     "type": "authentication_error",
     "code": "invalid_api_key",
     "status": 401

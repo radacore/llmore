@@ -23,6 +23,8 @@ import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Modal } from "@/components/ui/Modal";
 import { formatDate, formatRelativeTime } from "@/lib/utils";
+import { toast } from "@/stores/toastStore";
+import { AxiosError } from "axios";
 
 export default function ApiKeysPage() {
   const { data: apiKeys, isLoading, error } = useApiKeys();
@@ -57,8 +59,14 @@ export default function ApiKeysPage() {
       setShowCreateModal(false);
       setKeyName("");
       setShowKeyModal(true);
-    } catch {
-      // Error handled by mutation state
+      toast.create("API key berhasil dibuat", "Simpan key ini sekarang — hanya ditampilkan sekali.");
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ message?: string; error?: string }>;
+      const message =
+        axiosErr.response?.data?.message ??
+        axiosErr.message ??
+        "Gagal membuat API key. Coba lagi.";
+      toast.error("Gagal membuat API key", message);
     }
   };
 
@@ -66,10 +74,17 @@ export default function ApiKeysPage() {
     if (!revokeTarget) return;
     try {
       await revokeMutation.mutateAsync(revokeTarget.id);
+      const revokedName = revokeTarget.name;
       setShowRevokeModal(false);
       setRevokeTarget(null);
-    } catch {
-      // Error handled by mutation state
+      toast.delete("API key direvoke", `"${revokedName}" tidak bisa lagi dipakai.`);
+    } catch (err) {
+      const axiosErr = err as AxiosError<{ message?: string }>;
+      const message =
+        axiosErr.response?.data?.message ??
+        axiosErr.message ??
+        "Gagal merevoke API key.";
+      toast.error("Gagal revoke", message);
     }
   };
 

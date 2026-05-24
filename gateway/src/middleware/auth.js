@@ -12,7 +12,9 @@ async function authenticate(req, res, next) {
 
         const apiKey = authHeader.substring(7); // Remove "Bearer "
         
-        if (!apiKey.startsWith('llm_sk_')) {
+        // Terima prefix `llmora_` (baru) maupun `llm_sk_` (legacy) supaya
+        // key lama yang sudah beredar tetap berfungsi sampai di-revoke.
+        if (!apiKey.startsWith('llmora_') && !apiKey.startsWith('llm_sk_')) {
             return res.status(401).json({
                 error: { type: 'invalid_api_key', message: 'Invalid API key format' }
             });

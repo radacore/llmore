@@ -34,7 +34,7 @@ export function AuthenticationSection() {
           <span className="text-[#add3e5]">Authorization:</span>{" "}
           <span className="text-[#ffba09]">Bearer</span>{" "}
           <span className="text-[#e3c7de]">
-            llm_sk_xxxxxxxxxxxxxxxxxxxxxxxx
+            llmora_xxxxxxxxxxxxxxxxxxxxxxxx
           </span>
         </div>
       </div>
@@ -87,7 +87,7 @@ export function AuthenticationSection() {
 
       <Callout variant="warning">
         API key kamu harus dimulai dengan prefix{" "}
-        <InlineCode>llm_sk_</InlineCode>. Simpan key dengan aman. Jika key
+        <InlineCode>llmora_</InlineCode>. Simpan key dengan aman. Jika key
         hilang, kamu perlu membuat key baru.
       </Callout>
     </section>
