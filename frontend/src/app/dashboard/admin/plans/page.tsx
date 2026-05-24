@@ -17,6 +17,7 @@ import {
   useDeletePlan,
   type AdminPlan,
 } from '@/hooks/useAdmin';
+import { toast } from '@/stores/toastStore';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
@@ -101,10 +102,12 @@ function AdminPlansContent() {
     if (confirmName !== deleteTarget.name) return;
 
     setDeleteError(null);
+    const planName = deleteTarget.name;
     deletePlan.mutate(deleteTarget.id, {
       onSuccess: () => {
         setDeleteTarget(null);
         setConfirmName('');
+        toast.delete('Plan berhasil dihapus', `"${planName}" sudah dihapus dari sistem.`);
       },
       onError: (err: unknown) => {
         const axiosErr = err as {
@@ -195,11 +198,33 @@ function AdminPlansContent() {
     if (editingPlan) {
       updatePlan.mutate(
         { id: editingPlan.id, data: payload },
-        { onSuccess: () => setModalOpen(false) }
+        {
+          onSuccess: () => {
+            setModalOpen(false);
+            toast.update('Plan berhasil diperbarui', `Perubahan pada "${payload.name}" sudah disimpan.`);
+          },
+          onError: (err: unknown) => {
+            const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+            toast.error(
+              'Gagal memperbarui plan',
+              axiosErr.response?.data?.message ?? axiosErr.message ?? 'Coba lagi.',
+            );
+          },
+        }
       );
     } else {
       createPlan.mutate(payload as Partial<AdminPlan>, {
-        onSuccess: () => setModalOpen(false),
+        onSuccess: () => {
+          setModalOpen(false);
+          toast.create('Plan baru tersimpan', `"${payload.name}" sudah tersedia di sistem.`);
+        },
+        onError: (err: unknown) => {
+          const axiosErr = err as { response?: { data?: { message?: string } }; message?: string };
+          toast.error(
+            'Gagal menyimpan plan',
+            axiosErr.response?.data?.message ?? axiosErr.message ?? 'Coba lagi.',
+          );
+        },
       });
     }
   };

@@ -227,6 +227,21 @@
     }
 }
 
+@keyframes toast-in {
+    from {
+        opacity: 0;
+        transform: translateX(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.animate-toast-in {
+    animation: toast-in 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* ============================================================================
    Dashboard dark-mode softening
    Membuat tabel/card dashboard lebih nyaman: teks tidak putih keras, border halus,
