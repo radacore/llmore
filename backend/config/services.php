@@ -47,9 +47,9 @@ return [
         'webhook_url' => env('KLIKQRIS_WEBHOOK_URL', 'http://localhost:8000/api/payment/webhook'),
     ],
 
-    'askcodi' => [
-        'api_key' => env('ASKCODI_API_KEY'),
-        'api_url' => env('ASKCODI_API_URL', 'https://api.askcodi.com/v1'),
+    'upstream' => [
+        'api_key' => env('UPSTREAM_API_KEY'),
+        'api_url' => env('UPSTREAM_API_URL', 'http://llm-proxy:9898/v1'),
     ],
 
 ];

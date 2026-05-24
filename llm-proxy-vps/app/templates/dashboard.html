@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>LLM Proxy Router · Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --panel: #141821;
+      --panel-2: #1b212d;
+      --border: #232a39;
+      --text: #e6e8ee;
+      --muted: #8a93a6;
+      --accent: #6ee7b7;
+      --accent-2: #60a5fa;
+      --warn: #fbbf24;
+      --bad: #f87171;
+      --good: #34d399;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+
+    header {
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, #11151d, #0b0d12);
+    }
+
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 0.3px;
+    }
+
+    h1 span {
+      color: var(--accent);
+    }
+
+    h2 {
+      font-size: 15px;
+      margin: 20px 0 12px;
+      color: var(--accent-2);
+    }
+
+    main {
+      padding: 24px 28px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .grid-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .stat .value {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .stat .value.good {
+      color: var(--good);
+    }
+
+    .stat .value.warn {
+      color: var(--warn);
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 18px;
+    }
+
+    .toolbar input[type=number] {
+      width: 80px;
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 14px;
+    }
+
+    button {
+      background: var(--accent-2);
+      color: #0b0d12;
+      border: 0;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 13px;
+      transition: opacity .15s;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    button.secondary {
+      background: var(--panel-2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    button.danger {
+      background: var(--bad);
+      color: #0b0d12;
+    }
+
+    button.warmup {
+      background: var(--warn);
+      color: #0b0d12;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .sep {
+      border-left: 1px solid var(--border);
+      height: 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      text-align: left;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--panel-2);
+      color: var(--muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.5px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td.mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .badge.ok {
+      background: rgba(52, 211, 153, .15);
+      color: var(--good);
+    }
+
+    .badge.bad {
+      background: rgba(248, 113, 113, .15);
+      color: var(--bad);
+    }
+
+    .badge.warn {
+      background: rgba(251, 191, 36, .15);
+      color: var(--warn);
+    }
+
+    .badge.testing {
+      background: rgba(96, 165, 250, .15);
+      color: var(--accent-2);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .credit-bar {
+      width: 110px;
+      height: 6px;
+      background: var(--panel-2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .credit-bar>span {
+      display: block;
+      height: 100%;
+      background: var(--good);
+    }
+
+    .credit-bar.low>span {
+      background: var(--warn);
+    }
+
+    .credit-bar.empty>span {
+      background: var(--bad);
+    }
+
+    .settings-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .settings-inline label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .settings-inline input {
+      width: 65px !important;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity .2s;
+      max-width: 360px;
+      font-size: 13px;
+      z-index: 999;
+    }
+
+    #toast.show {
+      opacity: 1;
+    }
+
+    small.muted {
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🚀 LLM Proxy Router · <span>Dashboard</span></h1>
+    <small class="muted" id="last-update">—</small>
+  </header>
+
+  <main>
+    <div class="grid-stats" id="stats"></div>
+
+    <div class="toolbar">
+      <div class="settings-inline">
+        <label>Pool Size:</label>
+        <input id="pool-size-input" type="number" min="1" max="100" value="10" />
+        <button id="btn-set-pool" class="secondary" style="font-size:12px">Set</button>
+      </div>
+      <span class="sep"></span>
+      <span>Tambah:</span>
+      <input id="count" type="number" min="1" max="50" value="5" />
+      <button id="btn-create">+ Create Keys</button>
+      <button id="btn-ensure" class="secondary">⚙ Ensure Pool</button>
+      <button id="btn-refresh" class="secondary">↻ Refresh Credits</button>
+      <button id="btn-warmup" class="warmup">🔥 Warm-Up</button>
+      <span style="flex:1"></span>
+      <small class="muted">Auto-refresh tiap 5 detik</small>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>API Key</th>
+          <th>Email</th>
+          <th>Status</th>
+          <th>Warm-Up</th>
+          <th>In-flight</th>
+          <th>Requests</th>
+          <th>Errors</th>
+          <th>Credit Remaining</th>
+          <th>Expires</th>
+          <th>Last Error</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    let _warmup = {};  // key_prefix -> status
+
+    function toast(msg, ok = true) {
+      const t = $("toast");
+      t.textContent = msg;
+      t.style.borderColor = ok ? "var(--good)" : "var(--bad)";
+      t.classList.add("show");
+      clearTimeout(t._t);
+      t._t = setTimeout(() => t.classList.remove("show"), 2500);
+    }
+
+    async function api(path, opts = {}) {
+      const r = await fetch(path, {
+        headers: { "Content-Type": "application/json" },
+        ...opts,
+      });
+      if (!r.ok) throw new Error(`${r.status}: ${await r.text()}`);
+      return r.json();
+    }
+
+    function warmupBadge(keyPreview) {
+      // key_preview = "sk-or-v1-f77c...d6f", prefix = first 14 chars
+      const prefix = keyPreview ? keyPreview.substring(0, 14) : "";
+      const status = _warmup[prefix];
+      if (status === "ok") return '<span class="badge ok">OK</span>';
+      if (status === "crash") return '<span class="badge bad">CRASH</span>';
+      if (status === "testing") return '<span class="badge testing">testing…</span>';
+      return '<small class="muted">—</small>';
+    }
+
+    function fmtCredit(remaining, limit) {
+      if (remaining === null || remaining === undefined) return "<small class='muted'>—</small>";
+      const r = Number(remaining);
+      const l = limit ? Number(limit) : null;
+      const pct = l ? Math.max(0, Math.min(100, (r / l) * 100)) : 100;
+      let cls = "";
+      if (r < 0.05) cls = "empty";
+      else if (l && r / l < 0.2) cls = "low";
+      return `
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="credit-bar ${cls}"><span style="width:${pct}%"></span></div>
+      <span>$${r.toFixed(4)}${l ? ' / $' + l.toFixed(2) : ''}</span>
+    </div>`;
+    }
+
+    function renderStats(stats, cfg) {
+      $("pool-size-input").value = cfg.pool_size;
+      const utilCls = stats.global_utilization_pct >= 90 ? 'warn'
+        : stats.global_utilization_pct >= 70 ? '' : 'good';
+      $("stats").innerHTML = `
+    <div class="stat"><div class="label">Total Keys</div><div class="value">${stats.total_keys}</div></div>
+    <div class="stat"><div class="label">Healthy</div><div class="value ${stats.healthy_keys >= cfg.pool_size ? 'good' : 'warn'}">${stats.healthy_keys} / ${stats.pool_size_target}</div></div>
+    <div class="stat"><div class="label">In-Flight / Capacity</div><div class="value ${utilCls}">${stats.total_in_flight} / ${stats.global_capacity ?? '—'}</div></div>
+    <div class="stat"><div class="label">Utilization</div><div class="value ${utilCls}">${(stats.global_utilization_pct ?? 0).toFixed(1)}%</div></div>
+    <div class="stat"><div class="label">Max on 1 Key</div><div class="value">${stats.max_in_flight_on_one_key ?? 0} / ${stats.per_key_concurrency ?? cfg.per_key_concurrency}</div></div>
+    <div class="stat"><div class="label">Total Requests</div><div class="value">${stats.total_requests}</div></div>
+    <div class="stat"><div class="label">Total Errors</div><div class="value ${stats.total_errors > 0 ? 'warn' : ''}">${stats.total_errors}</div></div>
+    <div class="stat"><div class="label">Credit Pool (USD)</div><div class="value ${(stats.total_credit_remaining_usd >= (stats.refill_threshold_usd ?? 0)) ? 'good' : 'warn'}">$${stats.total_credit_remaining_usd} / $${stats.target_total_credit_usd ?? cfg.target_total_credit_usd ?? 0}</div><div class="muted" style="font-size:11px">${(stats.credit_progress_pct ?? 0).toFixed(1)}% · refill < $${stats.refill_threshold_usd ?? cfg.refill_threshold_usd ?? 0}${stats.trial_circuit_open ? ' · <span style="color:#f87171">CIRCUIT OPEN</span>' : ''}</div></div>
+    <div class="stat"><div class="label">LB Strategy</div><div class="value" style="font-size:14px">${stats.load_balance_strategy ?? '—'}</div></div>
+  `;
+    }
+
+    function inflightBar(inflight, cap) {
+      const pct = cap > 0 ? Math.min(100, (inflight / cap) * 100) : 0;
+      const cls = pct >= 100 ? 'empty' : pct >= 75 ? 'low' : '';
+      return `
+    <div style="display:flex;align-items:center;gap:6px">
+      <div class="credit-bar ${cls}" style="width:60px"><span style="width:${pct}%"></span></div>
+      <span>${inflight}/${cap}</span>
+    </div>`;
+    }
+
+    function renderRows(keys, cfg) {
+      if (!keys.length) {
+        $("rows").innerHTML = `<tr><td colspan="12" style="text-align:center;color:var(--muted);padding:30px">Pool kosong. Klik "+ Create Keys".</td></tr>`;
+        return;
+      }
+      const cap = cfg.per_key_concurrency || 4;
+      $("rows").innerHTML = keys.map((k, i) => {
+        const status = !k.enabled
+          ? '<span class="badge bad">disabled</span>'
+          : (k.credit_remaining !== null && k.credit_remaining < 0.05)
+            ? '<span class="badge warn">empty</span>'
+            : '<span class="badge ok">active</span>';
+        const exp = k.expires_at ? new Date(k.expires_at).toLocaleDateString() : '—';
+        return `
+      <tr>
+        <td>${i + 1}</td>
+        <td class="mono">${k.key_preview}</td>
+        <td><small class="muted">${k.email || '—'}</small></td>
+        <td>${status}</td>
+        <td>${warmupBadge(k.key_preview)}</td>
+        <td>${inflightBar(k.in_flight, cap)}</td>
+        <td>${k.total_requests}</td>
+        <td>${k.total_errors}</td>
+        <td>${fmtCredit(k.credit_remaining, k.credit_limit)}</td>
+        <td><small class="muted">${exp}</small></td>
+        <td><small class="muted">${k.last_error || '—'}</small></td>
+        <td><button class="danger" data-prefix="${k.key_preview.split('...')[0]}">Hapus</button></td>
+      </tr>`;
+      }).join("");
+
+      // Bind delete
+      document.querySelectorAll("button[data-prefix]").forEach(btn => {
+        btn.onclick = async () => {
+          if (!confirm("Hapus key ini?")) return;
+          try {
+            await api(`/api/keys/${encodeURIComponent(btn.dataset.prefix)}`, { method: "DELETE" });
+            toast("Key dihapus");
+            await refresh();
+          } catch (e) { toast("Gagal: " + e.message, false); }
+        };
+      });
+    }
+
+    async function refresh() {
+      try {
+        const data = await api("/api/stats");
+        _warmup = data.warmup || {};
+        renderStats(data.stats, data.config);
+        renderRows(data.keys, data.config);
+        $("last-update").textContent = "Update: " + new Date().toLocaleTimeString();
+      } catch (e) {
+        toast("Fetch gagal: " + e.message, false);
+      }
+    }
+
+    // ---- Button handlers ----------------------------------------------------
+    $("btn-create").onclick = async () => {
+      const n = parseInt($("count").value, 10);
+      $("btn-create").disabled = true;
+      try {
+        const r = await api("/api/keys/create", { method: "POST", body: JSON.stringify({ count: n }) });
+        toast(`Berhasil buat ${r.created}/${r.requested} key`);
+        await refresh();
+      } catch (e) { toast("Gagal: " + e.message, false); }
+      finally { $("btn-create").disabled = false; }
+    };
+
+    $("btn-ensure").onclick = async () => {
+      $("btn-ensure").disabled = true;
+      try {
+        const r = await api("/api/keys/ensure", { method: "POST" });
+        toast(`Pool diisi. Created: ${r.created}`);
+        await refresh();
+      } catch (e) { toast("Gagal: " + e.message, false); }
+      finally { $("btn-ensure").disabled = false; }
+    };
+
+    $("btn-refresh").onclick = async () => {
+      $("btn-refresh").disabled = true;
+      try {
+        await api("/api/keys/refresh", { method: "POST" });
+        toast("Credit di-refresh");
+        await refresh();
+      } catch (e) { toast("Gagal: " + e.message, false); }
+      finally { $("btn-refresh").disabled = false; }
+    };
+
+    $("btn-set-pool").onclick = async () => {
+      const val = parseInt($("pool-size-input").value, 10);
+      if (isNaN(val) || val < 1 || val > 100) { toast("Pool size harus 1..100", false); return; }
+      try {
+        await api("/api/settings", { method: "POST", body: JSON.stringify({ pool_size: val }) });
+        toast(`Pool size diubah ke ${val}`);
+        await refresh();
+      } catch (e) { toast("Gagal: " + e.message, false); }
+    };
+
+    $("btn-warmup").onclick = async () => {
+      $("btn-warmup").disabled = true;
+      $("btn-warmup").textContent = "🔥 Testing...";
+      try {
+        const r = await api("/api/keys/warmup", { method: "POST" });
+        toast(`Warm-up selesai: ${r.ok_count} OK, ${r.crash_count} CRASH`);
+        await refresh();
+      } catch (e) { toast("Gagal: " + e.message, false); }
+      finally {
+        $("btn-warmup").disabled = false;
+        $("btn-warmup").textContent = "🔥 Warm-Up";
+      }
+    };
+
+    // ---- Init ---------------------------------------------------------------
+    refresh();
+    setInterval(refresh, 5000);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,107 @@
+{
+    "$schema": "https://opencode.ai/config.json",
+    "plugin": [
+        "oh-my-openagent"
+    ],
+    "provider": {
+        "local-proxy": {
+            "npm": "@ai-sdk/openai-compatible",
+            "name": "Local LLM Proxy Router",
+            "options": {
+                "baseURL": "http://127.0.0.1:9898/v1",
+                "apiKey": "sk-local-CHANGEME-32chars"
+            },
+            "models": {
+                "anthropic/claude-opus-4.7": {
+                    "name": "Claude Opus 4.7 (proxy)",
+                    "limit": {
+                        "context": 1000000,
+                        "output": 128000
+                    },
+                    "cost": {
+                        "input": 5,
+                        "output": 25
+                    },
+                    "tools": true,
+                    "reasoning": true
+                },
+                "anthropic/claude-opus-4.6": {
+                    "name": "Claude Opus 4.6 (proxy)",
+                    "limit": {
+                        "context": 1000000,
+                        "output": 128000
+                    },
+                    "cost": {
+                        "input": 5,
+                        "output": 25
+                    },
+                    "tools": true
+                },
+                "anthropic/claude-opus-4.5": {
+                    "name": "Claude Opus 4.5 (proxy)",
+                    "limit": {
+                        "context": 200000,
+                        "output": 64000
+                    },
+                    "cost": {
+                        "input": 5,
+                        "output": 25
+                    },
+                    "tools": true
+                },
+                "anthropic/claude-sonnet-4.6": {
+                    "name": "Claude Sonnet 4.6 (proxy)",
+                    "limit": {
+                        "context": 1000000,
+                        "output": 128000
+                    },
+                    "cost": {
+                        "input": 3,
+                        "output": 15
+                    },
+                    "tools": true
+                },
+                "anthropic/claude-sonnet-4.5": {
+                    "name": "Claude Sonnet 4.5 (proxy)",
+                    "limit": {
+                        "context": 1000000,
+                        "output": 64000
+                    },
+                    "cost": {
+                        "input": 3,
+                        "output": 15
+                    },
+                    "tools": true
+                },
+                "anthropic/claude-haiku-4.5": {
+                    "name": "Claude Haiku 4.5 (proxy)",
+                    "limit": {
+                        "context": 200000,
+                        "output": 64000
+                    },
+                    "cost": {
+                        "input": 1,
+                        "output": 5
+                    },
+                    "tools": true
+                },
+                "anthropic/claude-3.5-haiku": {
+                    "name": "Claude 3.5 Haiku (proxy)",
+                    "limit": {
+                        "context": 200000,
+                        "output": 8192
+                    },
+                    "cost": {
+                        "input": 0.8,
+                        "output": 4
+                    },
+                    "tools": true
+                }
+            }
+        }
+    },
+    "model": "local-proxy/anthropic/claude-opus-4.7",
+    "small_model": "local-proxy/anthropic/claude-haiku-4.5",
+    "autoshare": false,
+    "autoupdate": true
+}

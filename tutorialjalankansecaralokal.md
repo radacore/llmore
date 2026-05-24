@@ -39,7 +39,7 @@ Panduan lengkap untuk menjalankan proyek **LLMore.id — AI Gateway Platform** d
 
 **Alur data:**
 1. **Frontend** menampilkan UI dan mengirim request ke **Backend** untuk auth, billing, dan manajemen API key
-2. **Gateway** menerima request AI dari frontend, memvalidasi API key via **Redis**, dan meneruskan ke AskCodi API
+2. **Gateway** menerima request AI dari client, memvalidasi API key via **Redis**, dan meneruskan ke service **LLM Proxy** (FastAPI) yang me-rotasi pool API key OpenRouter
 3. **Backend** menyimpan data di **PostgreSQL** dan meng-cache API key di **Redis**
 
 ---
@@ -94,7 +94,7 @@ redis-cli ping  # PONG
 |---------------------|-----------------------------------|----------------------------------------------------------|
 | Google OAuth        | Login via Google                  | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth 2.0 Client IDs |
 | Midtrans Sandbox    | Payment gateway (sandbox mode)    | [Midtrans Dashboard](https://dashboard.sandbox.midtrans.com/) → Settings → Access Keys |
-| AskCodi API Key     | AI code assistant gateway         | [AskCodi](https://askcodi.com/) → Dashboard → API Keys   |
+| OpenRouter API Key  | Upstream LLM (dipool di service `llm-proxy`) | [OpenRouter](https://openrouter.ai/keys) atau auto-trial via Alice/overment (lihat `llm-proxy-vps/README.md`) |
 
 ### Cara Setup Google OAuth
 1. Buka [Google Cloud Console](https://console.cloud.google.com/)
@@ -269,9 +269,11 @@ REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=0
 
-# AskCodi (opsional — diperlukan untuk AI request)
-ASKCODI_API_URL=https://api.askcodi.com/v1
-ASKCODI_API_KEY=your-askcodi-api-key
+# Upstream LLM Proxy (lihat llm-proxy-vps/. Di docker compose ini service name = llm-proxy)
+UPSTREAM_API_URL=http://llm-proxy:9898/v1
+# Kosong = no-auth (default untuk akses internal docker network)
+UPSTREAM_API_KEY=
+UPSTREAM_DEFAULT_MODEL=anthropic/claude-opus-4.7
 
 # Frontend URL (untuk CORS)
 FRONTEND_URL=http://localhost:3000
@@ -467,9 +469,10 @@ REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=0
 
-# AskCodi
-ASKCODI_API_URL=https://api.askcodi.com/v1
-ASKCODI_API_KEY=your-askcodi-api-key
+# Upstream LLM Proxy
+UPSTREAM_API_URL=http://llm-proxy:9898/v1
+UPSTREAM_API_KEY=
+UPSTREAM_DEFAULT_MODEL=anthropic/claude-opus-4.7
 
 # Frontend URL (untuk CORS)
 FRONTEND_URL=http://localhost:3000
@@ -742,8 +745,9 @@ php artisan migrate:fresh --seed
 
 ### 🤖 Gateway & AI Request
 - Gateway **membutuhkan Redis** yang berjalan untuk rate limiting dan caching
-- Gateway **membutuhkan AskCodi API key** yang valid untuk memproses AI request
-- Tanpa API key AskCodi, endpoint `/chat/completions` akan mengembalikan error
+- Gateway **membutuhkan service `llm-proxy` berjalan** untuk memproses AI request
+- Service `llm-proxy` butuh minimal 1 OpenRouter API key aktif di `llm-proxy-vps/.env` atau di `data/keys.json`
+- Tanpa key OpenRouter yang valid, endpoint `/chat/completions` akan mengembalikan error 402/503
 
 ### 🖥️ Frontend Standalone
 - Frontend **bisa berjalan tanpa backend** — tampilan UI tetap muncul

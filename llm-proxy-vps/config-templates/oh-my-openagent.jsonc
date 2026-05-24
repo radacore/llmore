@@ -1,0 +1,114 @@
+// oh-my-openagent (omo) configuration
+// Lokasi:
+//   - Global: ~/.config/opencode/oh-my-openagent.jsonc
+//   - Per-project: <project>/.opencode/oh-my-openagent.jsonc
+//
+// Strategi: SEMUA agent diarahkan ke proxy lokal (POOL 10 key OpenRouter, $1/key)
+// Model dipilih untuk balance kualitas vs $1 trial budget.
+{
+    "$schema": "https://raw.githubusercontent.com/code-yeongyu/oh-my-openagent/dev/assets/oh-my-opencode.schema.json",
+    // ============================================================
+    // Kategori (dipakai sub-agent generic via Sisyphus delegation)
+    // ============================================================
+    "categories": {
+        "ultrabrain": {
+            "model": "local-proxy/anthropic/claude-opus-4.7"
+        },
+        "deep": {
+            "model": "local-proxy/anthropic/claude-opus-4.7"
+        },
+        "visual-engineering": {
+            "model": "local-proxy/anthropic/claude-sonnet-4.6"
+        },
+        "quick": {
+            "model": "local-proxy/anthropic/claude-haiku-4.5"
+        }
+    },
+    // ============================================================
+    // Override eksplisit per-agent
+    // ============================================================
+    "agents": {
+        // ---- Claude-optimized agents (utama) ----
+        "sisyphus": {
+            "model": "local-proxy/anthropic/claude-opus-4.7",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-opus-4.6",
+                "local-proxy/anthropic/claude-opus-4.5",
+                "local-proxy/anthropic/claude-sonnet-4.6"
+            ]
+        },
+        "metis": {
+            "model": "local-proxy/anthropic/claude-sonnet-4.6",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-opus-4.7"
+            ]
+        },
+        // ---- Dual-prompt agents (auto-detect family) ----
+        "prometheus": {
+            "model": "local-proxy/anthropic/claude-opus-4.7",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-sonnet-4.6"
+            ]
+        },
+        "atlas": {
+            "model": "local-proxy/anthropic/claude-sonnet-4.6",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-opus-4.7"
+            ]
+        },
+        // ---- GPT-native agents (kita pakai Opus sebagai pengganti — proxy tidak punya GPT) ----
+        "hephaestus": {
+            "model": "local-proxy/anthropic/claude-opus-4.7",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-opus-4.6"
+            ]
+        },
+        "oracle": {
+            "model": "local-proxy/anthropic/claude-opus-4.7",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-sonnet-4.6"
+            ]
+        },
+        "momus": {
+            "model": "local-proxy/anthropic/claude-opus-4.7",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-sonnet-4.6"
+            ]
+        },
+        // ---- Utility agents (HARUS MURAH — speed > intelligence) ----
+        "explore": {
+            "model": "local-proxy/anthropic/claude-haiku-4.5",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-3.5-haiku"
+            ]
+        },
+        "librarian": {
+            "model": "local-proxy/anthropic/claude-haiku-4.5",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-3.5-haiku"
+            ]
+        },
+        "multimodal-looker": {
+            "model": "local-proxy/anthropic/claude-sonnet-4.6",
+            "fallback_models": [
+                "local-proxy/anthropic/claude-opus-4.7"
+            ]
+        }
+    },
+    // ============================================================
+    // Team Mode v4.0 (opt-in)
+    // Aktifkan kalau butuh paralel hyperplan / security-research.
+    // Untuk single user dgn budget ketat, BIARKAN false.
+    // ============================================================
+    "team_mode": {
+        "enabled": false,
+        "max_parallel_members": 4,
+        "tmux_visualization": true
+    },
+    // ============================================================
+    // Telemetry (opsional — non-aktifkan kalau privacy)
+    // ============================================================
+    "telemetry": {
+        "anonymous": false
+    }
+}

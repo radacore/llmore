@@ -51,7 +51,8 @@ flowchart LR
     B --> P[(PostgreSQL)]
     B --> R[(Redis)]
     G --> R
-    G --> A[AskCodi API]
+    G --> L[LLM Proxy Pool<br/>FastAPI :9898]
+    L --> O[OpenRouter]
 ```
 
 | Service | Teknologi | Port | Fungsi |
@@ -59,6 +60,7 @@ flowchart LR
 | Frontend | Next.js 16 + React 19 | 3000 | Dashboard, docs, auth UI |
 | Backend | Laravel 13 | 8000 | Auth, billing, API key, admin, usage |
 | Gateway | Node.js + Express | 3001 | OpenAI-compatible proxy + streaming |
+| LLM Proxy | FastAPI + httpx | 9898 (internal) | Pool key OpenRouter + auto-rotasi + failover |
 | Database | PostgreSQL 16 | 5432 | Data utama |
 | Cache | Redis 7 | 6379 | Quota, rate limit, API key cache, queue |
 | Reverse Proxy | Nginx | 80/443 | Routing domain + proxy |
@@ -88,7 +90,7 @@ flowchart TD
     L --> M[Client kirim request ke /v1/chat/completions]
     M --> N[Gateway validasi API Key dari Redis]
     N --> O[Gateway cek rate limit dan quota]
-    O --> P[Proxy request ke AskCodi]
+    O --> P[Proxy request ke LLM Proxy Pool - OpenRouter]
     P --> Q[Streaming response ke client]
     Q --> R[Gateway deduct quota dan push usage_logs_queue]
     R --> S[Laravel command usage:process simpan ke PostgreSQL]
@@ -104,7 +106,7 @@ flowchart TD
 5. Setelah pembayaran berhasil, webhook memicu aktivasi subscription dan reset quota.
 6. User membuat API key untuk akses gateway AI.
 7. Client eksternal memanggil endpoint gateway OpenAI-compatible.
-8. Gateway membaca API key cache dari Redis, cek quota/rate limit, lalu meneruskan request ke AskCodi.
+8. Gateway membaca API key cache dari Redis, cek quota/rate limit, lalu meneruskan request ke service `llm-proxy` (FastAPI). `llm-proxy` memilih API key OpenRouter dari pool (least-inflight), forward ke OpenRouter, dan otomatis failover/ganti key kalau ada error 401/402/429.
 9. Gateway mengembalikan streaming/non-streaming response ke client.
 10. Usage log diantrikan di Redis, lalu diproses Laravel scheduler ke PostgreSQL.
 11. Dashboard menampilkan statistik penggunaan, transaksi, dan status paket terbaru.
@@ -235,8 +237,9 @@ Salin `.env.example` root ke `.env`, lalu sesuaikan nilainya.
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | - |
 | `KLIKQRIS_API_KEY` | API key KlikQRIS | - |
 | `KLIKQRIS_MERCHANT_ID` | Merchant ID KlikQRIS | - |
-| `ASKCODI_API_URL` | URL upstream AskCodi | `https://api.askcodi.com/v1` |
-| `ASKCODI_API_KEY` | API key AskCodi | - |
+| `UPSTREAM_API_URL` | URL service `llm-proxy` (OpenAI-compatible) | `http://llm-proxy:9898/v1` |
+| `UPSTREAM_API_KEY` | Diisi kalau llm-proxy diproteksi `PROXY_API_KEY`; default kosong untuk akses internal docker network | - |
+| `UPSTREAM_DEFAULT_MODEL` | Default model OpenRouter kalau client tidak menyebut model | `anthropic/claude-opus-4.7` |
 | `NEXT_PUBLIC_API_URL` | URL backend untuk frontend | `http://localhost:8000/api` |
 | `NEXT_PUBLIC_GATEWAY_URL` | URL gateway untuk frontend | `http://localhost:3001` |
 | `GATEWAY_PORT` | Port service gateway | `3001` |

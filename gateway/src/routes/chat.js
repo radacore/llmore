@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const router = express.Router();
 const authenticate = require('../middleware/auth');
 const rateLimit = require('../middleware/rateLimit');
-const { streamCompletion, completion } = require('../services/askcodi');
+const { streamCompletion, completion, DEFAULT_MODEL } = require('../services/upstream');
 const { checkQuota, deductQuota } = require('../services/quota');
 const { countTokens, countMessagesTokens } = require('../utils/tokenCounter');
 const redis = require('../services/redis');
@@ -65,7 +65,7 @@ router.post('/completions', authenticate, rateLimit, async (req, res) => {
         }
 
         const options = {
-            model: model || 'askcodi-default',
+            model: model || DEFAULT_MODEL,
             max_tokens: Math.min(max_tokens || 1024, 4096),
             temperature: temperature ?? 0.7,
             top_p,

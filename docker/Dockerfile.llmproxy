@@ -1,0 +1,22 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install runtime deps (cloudscraper25 butuh libssl + ca-certs, sisanya headers untuk h2/httpx wheels)
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY llm-proxy-vps/requirements.txt ./requirements.txt
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
+
+COPY llm-proxy-vps/ .
+
+# Pool key disimpan di volume agar persist lintas restart
+RUN mkdir -p /app/data
+
+EXPOSE 9898
+
+# Jalankan via run.py (akan auto-pilih gunicorn+UvicornWorker di linux, fallback ke uvicorn)
+CMD ["python", "run.py", "--mode", "server"]

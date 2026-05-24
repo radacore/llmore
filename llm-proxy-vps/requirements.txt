@@ -1,0 +1,15 @@
+# Versi minimum agar kompatibel dengan Python 3.13/3.14 (wheel pre-built tersedia)
+fastapi>=0.115.5
+uvicorn[standard]>=0.32.1
+httpx>=0.28.1
+h2>=4.1.0
+cloudscraper25>=2.7.0
+python-dotenv>=1.0.1
+pydantic>=2.10.3
+jinja2>=3.1.4
+
+# Server mode di Linux (Windows fallback ke uvicorn workers)
+gunicorn>=23.0.0 ; sys_platform != "win32"
+
+# Production performance (opsional, Linux/macOS only - wheel tidak ada di Windows)
+uvloop>=0.21.0 ; sys_platform != "win32"

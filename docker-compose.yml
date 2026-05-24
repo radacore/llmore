@@ -72,6 +72,29 @@ services:
     ports:
       - "3000:3000"
 
+  # LLM Proxy (internal upstream — OpenRouter pool + auto-rotation)
+  # Tidak diexpose ke host; gateway memanggilnya via internal network.
+  llm-proxy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.llmproxy
+    container_name: llmore-llmproxy
+    restart: unless-stopped
+    env_file: ./llm-proxy-vps/.env
+    environment:
+      - HOST=0.0.0.0
+      - PORT=9898
+    volumes:
+      - llmproxy_data:/app/data
+    expose:
+      - "9898"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:9898/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
   # Node.js Gateway
   gateway:
     build:
@@ -83,6 +106,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - UPSTREAM_API_URL=http://llm-proxy:9898/v1
     volumes:
       - ./gateway:/app
       - /app/node_modules
@@ -91,6 +115,8 @@ services:
     depends_on:
       redis:
         condition: service_healthy
+      llm-proxy:
+        condition: service_started
 
   # Nginx Reverse Proxy
   nginx:
@@ -110,3 +136,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  llmproxy_data:

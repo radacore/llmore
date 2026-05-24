@@ -9,45 +9,50 @@ use Illuminate\Support\Facades\Http;
 
 class ModelController extends Controller
 {
-    /**
-     * List available AI models from AskCodi.
-     * Cache for 1 hour to avoid hitting AskCodi API too often.
-     */
     public function index(): JsonResponse
     {
-        $models = Cache::remember('askcodi_models', 3600, function () {
+        $models = Cache::remember('upstream_models', 3600, function () {
             try {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . config('services.askcodi.api_key'),
-                ])->timeout(10)->get(config('services.askcodi.api_url') . '/models');
+                $request = Http::timeout(10);
+
+                $apiKey = config('services.upstream.api_key');
+                if (!empty($apiKey)) {
+                    $request = $request->withHeaders(['Authorization' => 'Bearer ' . $apiKey]);
+                }
+
+                $response = $request->get(config('services.upstream.api_url') . '/models');
 
                 if ($response->successful()) {
                     $data = $response->json('data', []);
 
                     return collect($data)->map(function ($model) {
-                        $config = $model['config'] ?? [];
-                        $cost = $config['cost'] ?? [];
-                        $limits = $config['limits'] ?? [];
+                        $pricing = $model['pricing'] ?? [];
 
                         return [
-                            'id' => $model['id'],
-                            'owned_by' => $model['owned_by'] ?? 'unknown',
-                            'context_length' => $limits['context_length']['max'] ?? $model['context_length'] ?? null,
-                            'input_price' => $cost['per_million_input'] ?? null,
-                            'output_price' => $cost['per_million_output'] ?? null,
-                            'input_multiplier' => $cost['input_token_multiplier'] ?? 1.0,
-                            'output_multiplier' => $cost['output_token_multiplier'] ?? 1.0,
-                            'is_free' => str_contains($model['id'] ?? '', ':free'),
+                            'id' => $model['id'] ?? null,
+                            'owned_by' => $model['owned_by'] ?? ($model['top_provider']['name'] ?? 'unknown'),
+                            'context_length' => $model['context_length']
+                                ?? ($model['top_provider']['context_length'] ?? null),
+                            'input_price' => $pricing['prompt'] ?? null,
+                            'output_price' => $pricing['completion'] ?? null,
+                            'is_free' => self::isFreePricing($pricing),
                         ];
                     })->values()->all();
                 }
 
                 return [];
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 return [];
             }
         });
 
         return response()->json(['data' => $models]);
+    }
+
+    private static function isFreePricing(array $pricing): bool
+    {
+        $prompt = isset($pricing['prompt']) ? (float) $pricing['prompt'] : 1.0;
+        $completion = isset($pricing['completion']) ? (float) $pricing['completion'] : 1.0;
+        return $prompt === 0.0 && $completion === 0.0;
     }
 }

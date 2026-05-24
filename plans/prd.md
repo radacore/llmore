@@ -27,9 +27,9 @@
 
 ## 1. Ringkasan Eksekutif
 
-**DaengBisa.id** adalah platform API AI Gateway yang memungkinkan pengguna (developer, mahasiswa, startup) mengakses layanan AI melalui API yang terkelola. Platform ini bertindak sebagai **proxy/gateway** antara pelanggan dan provider AI backend (AskCodi), menangani autentikasi, manajemen kuota token, billing, dan streaming response secara real-time.
+**LLMora.id** adalah platform API AI Gateway yang memungkinkan pengguna (developer, mahasiswa, startup) mengakses layanan AI melalui API yang terkelola. Platform ini bertindak sebagai **proxy/gateway** antara pelanggan dan provider AI backend (LLM Proxy Pool), menangani autentikasi, manajemen kuota token, billing, dan streaming response secara real-time.
 
-Platform ini **TIDAK** menjalankan model AI sendiri. Semua inferensi dilakukan oleh server AskCodi. VPS DaengBisa murni berfungsi sebagai **traffic proxy** — menerima request, memvalidasi, meneruskan ke AskCodi, dan mengembalikan response ke pelanggan.
+Platform ini **TIDAK** menjalankan model AI sendiri. Semua inferensi dilakukan oleh service LLM Proxy Pool (OpenRouter). VPS LLMora murni berfungsi sebagai **traffic proxy** — menerima request, memvalidasi, meneruskan ke LLM Proxy Pool, dan mengembalikan response ke pelanggan.
 
 ---
 
@@ -118,12 +118,12 @@ flowchart TD
     J --> K
     K --> L[User salin Base URL + API Key]
     L --> M[User integrasikan ke aplikasi]
-    M --> N[Aplikasi user kirim request ke api.daengbisa.id/v1]
+    M --> N[Aplikasi user kirim request ke api.llmora.id/v1]
     N --> O{Gateway: Validasi API Key + Cek Kuota}
     O -->|Invalid / Habis| P[Return Error 401/402]
-    O -->|Valid| Q[Lepas key user, pasang token AskCodi]
-    Q --> R[Forward request ke AskCodi]
-    R --> S[AskCodi proses + streaming response]
+    O -->|Valid| Q[Lepas key user, pasang key OpenRouter dari pool]
+    Q --> R[Forward request ke LLM Proxy Pool]
+    R --> S[LLM Proxy Pool proses + streaming response]
     S --> T[Proxy streaming ke user real-time]
     T --> U[Hitung token usage]
     U --> V[Kurangi kuota di Redis]
@@ -141,14 +141,14 @@ flowchart TD
 #### Fase 2: Mendapatkan & Memasang API Key
 1. Di dashboard, user klik **Generate API Key**
 2. Sistem membuatkan kunci unik dengan prefix, contoh: `daeng_sk_abc123xyz`
-3. User menyalin **Base URL** (`https://api.daengbisa.id/v1`) dan **API Key** ke dalam kode aplikasinya
+3. User menyalin **Base URL** (`https://api.llmora.id/v1`) dan **API Key** ke dalam kode aplikasinya
 
 #### Fase 3: Penggunaan API (Di Balik Layar)
-1. Aplikasi user mengirim prompt ke server DaengBisa
+1. Aplikasi user mengirim prompt ke server LLMora
 2. Gateway mengecek ke **Redis**: validitas API key dan sisa kuota
 3. Jika kuota habis → return `402 Payment Required`
-4. Jika aman → lepas key user, pasang **Token AskCodi**, forward ke server AskCodi
-5. AskCodi memproses dan membalas via **streaming**
+4. Jika aman → lepas key user, pasang **Key OpenRouter dari pool**, forward ke service LLM Proxy Pool (OpenRouter)
+5. LLM Proxy Pool memproses dan membalas via **streaming**
 6. Server proxy streaming response ke user secara **real-time**
 7. Setelah selesai, hitung panjang token response dan kurangi kuota user di Redis
 8. Secara periodik (tiap 5 menit), sinkronkan data kuota dari Redis ke PostgreSQL
@@ -168,7 +168,7 @@ flowchart TD
 | **Cache / Session / Kuota** | Redis |
 | **Payment Gateway** | Midtrans (QRIS, VA, e-wallet) |
 | **Auth** | Google OAuth 2.0 + Laravel Sanctum |
-| **AI Backend** | AskCodi API |
+| **AI Backend** | upstream LLM API (LLM Proxy Pool) |
 | **Web Server** | Nginx (reverse proxy) |
 | **VPS** | Linux (Ubuntu) |
 | **Monitoring** | Prometheus + Grafana / Laravel Telescope |
@@ -190,7 +190,7 @@ flowchart LR
     end
 
     subgraph External
-        G[AskCodi AI Server]
+        G[LLM Proxy Pool AI Server]
         H[Midtrans Payment]
         I[Google OAuth]
     end
@@ -212,7 +212,7 @@ flowchart LR
 | Komponen | Tanggung Jawab |
 |----------|----------------|
 | **Laravel Octane** | Auth, user management, billing, webhook Midtrans, API key management, dashboard API, kuota sync |
-| **Node.js Sidecar** | Menerima request AI, validasi via Redis, proxy streaming ke AskCodi, hitung token usage |
+| **Node.js Sidecar** | Menerima request AI, validasi via Redis, proxy streaming ke LLM Proxy Pool, hitung token usage |
 | **Redis** | Simpan kuota real-time, rate limiting, session cache, API key validation cache |
 | **PostgreSQL** | Data user, transaksi, histori usage, paket, API keys, audit log |
 | **Nginx** | SSL termination, routing request ke Laravel atau Node.js berdasarkan path |
@@ -261,14 +261,14 @@ flowchart LR
 |----|-------|-----------|-----------|
 | GW-01 | API Key Validation | P0 | Validasi API key dari header request |
 | GW-02 | Quota Check | P0 | Cek sisa kuota token via Redis sebelum forward |
-| GW-03 | Request Proxy | P0 | Forward request ke AskCodi dengan token internal |
-| GW-04 | Streaming Response | P0 | Proxy SSE/streaming dari AskCodi ke client |
+| GW-03 | Request Proxy | P0 | Forward request ke LLM Proxy Pool dengan token internal |
+| GW-04 | Streaming Response | P0 | Proxy SSE/streaming dari LLM Proxy Pool ke client |
 | GW-05 | Token Counting | P0 | Hitung jumlah token input + output |
 | GW-06 | Quota Deduction | P0 | Kurangi kuota di Redis setelah request selesai |
 | GW-07 | Rate Limiting | P0 | Batasi jumlah request per menit sesuai paket |
 | GW-08 | Error Handling | P0 | Return error code yang jelas: 401, 402, 429, 500, 503 |
 | GW-09 | Request Logging | P1 | Log setiap request untuk analytics dan debugging |
-| GW-10 | Multi-model Support | P2 | Support multiple AI provider, bukan hanya AskCodi |
+| GW-10 | Multi-model Support | P2 | Support multiple AI provider, bukan hanya LLM Proxy Pool |
 | GW-11 | Caching Response | P2 | Cache response untuk prompt identik - opsional |
 
 ### 7.5 Admin Panel
@@ -279,7 +279,7 @@ flowchart LR
 | ADM-02 | Transaction Monitor | P0 | Monitor semua transaksi pembayaran |
 | ADM-03 | Usage Dashboard | P0 | Overview total usage, revenue, active users |
 | ADM-04 | Paket Management | P1 | CRUD paket/pricing dari admin panel |
-| ADM-05 | System Health | P1 | Monitor status server, Redis, database, AskCodi connectivity |
+| ADM-05 | System Health | P1 | Monitor status server, Redis, database, LLM Proxy Pool connectivity |
 | ADM-06 | Manual Quota Adjust | P1 | Tambah/kurangi kuota user secara manual |
 | ADM-07 | Announcement System | P2 | Kirim pengumuman ke semua user |
 
@@ -350,7 +350,7 @@ Request AI completion (kompatibel dengan format OpenAI).
 
 ```json
 {
-  "model": "askcodi-default",
+  "model": "anthropic/claude-opus-4.7",
   "messages": [
     {
       "role": "system",
@@ -374,7 +374,7 @@ Request AI completion (kompatibel dengan format OpenAI).
   "id": "daeng-xxxxxxxx",
   "object": "chat.completion",
   "created": 1714567890,
-  "model": "askcodi-default",
+  "model": "anthropic/claude-opus-4.7",
   "choices": [
     {
       "index": 0,
@@ -432,8 +432,8 @@ List model yang tersedia.
 {
   "data": [
     {
-      "id": "askcodi-default",
-      "name": "AskCodi Default",
+      "id": "anthropic/claude-opus-4.7",
+      "name": "Claude Opus 4.7",
       "description": "Model AI general purpose"
     }
   ]
@@ -449,7 +449,7 @@ List model yang tersedia.
 | 429 | `rate_limit_exceeded` | Melebihi batas request per menit |
 | 400 | `invalid_request` | Request body tidak valid |
 | 500 | `internal_error` | Error internal server |
-| 503 | `upstream_unavailable` | Server AskCodi tidak tersedia |
+| 503 | `upstream_unavailable` | Service LLM Proxy Pool (OpenRouter) tidak tersedia |
 
 ---
 
@@ -467,11 +467,11 @@ List model yang tersedia.
 
 ### Strategi Skalabilitas
 
-DaengBisa adalah **proxy/gateway**, bukan AI inference server. Beban utama ada di:
+LLMora adalah **proxy/gateway**, bukan AI inference server. Beban utama ada di:
 
 #### A. Bandwidth (Prioritas Tertinggi)
 
-Karena server menerima teks dari AskCodi dan meneruskannya ke client, traffic jaringan akan tinggi.
+Karena server menerima teks dari LLM Proxy Pool dan meneruskannya ke client, traffic jaringan akan tinggi.
 
 - **Kebutuhan:** Network port minimal 1 Gbps, kuota bandwidth besar atau unlimited
 - **Monitoring:** Track bandwidth usage harian
@@ -575,7 +575,7 @@ flowchart TD
 - Setup infrastruktur VPS: Nginx, PostgreSQL, Redis
 - Backend Laravel Octane: Auth, User Management, Billing
 - Integrasi Midtrans (QRIS)
-- Node.js Sidecar: Proxy + Streaming ke AskCodi
+- Node.js Sidecar: Proxy + Streaming ke LLM Proxy Pool
 - API Key management (generate, revoke)
 - Kuota management di Redis
 - Frontend Dashboard (Next.js): Login, Overview, API Keys, Usage
@@ -597,7 +597,7 @@ flowchart TD
 ### Fase 3: Scale
 
 - Paket Enterprise + Team Management
-- Multi-model support (selain AskCodi)
+- Multi-model support (selain LLM Proxy Pool)
 - Official SDK (Python, JavaScript)
 - Auto-renewal billing
 - Load balancer + horizontal scaling
@@ -619,13 +619,13 @@ flowchart TD
 
 | Risiko | Dampak | Probabilitas | Mitigasi |
 |--------|--------|-------------|----------|
-| **AskCodi down/tidak tersedia** | Tinggi | Sedang | Implementasi fallback ke provider AI lain; circuit breaker pattern; response cache |
+| **LLM Proxy Pool down/tidak tersedia** | Tinggi | Sedang | Implementasi fallback ke provider AI lain; circuit breaker pattern; response cache |
 | **Serangan DDoS** | Tinggi | Sedang | Cloudflare, rate limiting ketat, firewall rules |
-| **Kebocoran API Key AskCodi** | Tinggi | Rendah | Simpan di environment variable, rotasi berkala, akses terbatas |
+| **Kebocoran API Key Upstream** | Tinggi | Rendah | Simpan di environment variable, rotasi berkala, akses terbatas |
 | **Fraud Payment** | Sedang | Sedang | Validasi webhook Midtrans dengan signature key, monitoring transaksi anomali |
 | **Kuota tidak akurat** | Sedang | Sedang | Redis sebagai source of truth real-time, reconciliation job berkala ke PostgreSQL |
 | **VPS overload** | Sedang | Rendah | Monitoring + alerting, auto-scaling plan, horizontal scaling ready |
-| **Perubahan harga AskCodi** | Sedang | Sedang | Margin buffer di pricing, kontrak/agreement dengan AskCodi |
+| **Perubahan harga OpenRouter/upstream** | Sedang | Sedang | Margin buffer di pricing, buffer kredit pool + auto-rotasi trial key |
 | **Data loss** | Tinggi | Rendah | Daily backup, Redis persistence (AOF), PostgreSQL WAL |
 
 ---
@@ -645,7 +645,7 @@ flowchart TD
 
 ### B. Referensi
 
-- [AskCodi API Documentation](https://askcodi.com)
+- [upstream LLM API (LLM Proxy Pool) Documentation](https://openrouter.ai/docs)
 - [Midtrans API Documentation](https://docs.midtrans.com)
 - [Laravel Octane Documentation](https://laravel.com/docs/octane)
 - [OpenAI API Format Reference](https://platform.openai.com/docs/api-reference)
