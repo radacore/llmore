@@ -31,6 +31,7 @@ class PlanResource extends JsonResource
             'max_api_keys' => $this->max_api_keys,
             'features' => $features,
             'is_active' => $this->is_active,
+            'is_official' => (bool) $this->is_official,
         ];
     }
 }

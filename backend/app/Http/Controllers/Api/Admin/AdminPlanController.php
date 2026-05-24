@@ -11,15 +11,19 @@ use Illuminate\Http\Request;
 class AdminPlanController extends Controller
 {
     /**
-     * Return official plans dengan count active subscriptions.
+     * List semua plan (official + custom) dengan count active subscriptions.
+     *
+     * Plan official ditampilkan dulu agar konsisten dengan landing page,
+     * lalu plan custom buatan admin di bawahnya.
      */
     public function index(): JsonResponse
     {
         Plan::syncOfficialPricingPlans();
 
         $plans = Plan::withCount(['subscriptions' => fn ($q) => $q->where('status', 'active')])
-            ->whereIn('slug', Plan::officialPricingSlugs())
+            ->orderByDesc('is_official')
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
 
         return response()->json([
@@ -27,6 +31,7 @@ class AdminPlanController extends Controller
                 (new PlanResource($plan))->resolve(),
                 [
                     'is_active' => $plan->is_active,
+                    'is_official' => $plan->is_official,
                     'active_subscriptions_count' => $plan->subscriptions_count,
                 ]
             )),
@@ -54,6 +59,9 @@ class AdminPlanController extends Controller
             'sort_order' => 'nullable|integer|min:0',
         ]);
 
+        // Plan buatan admin selalu non-official supaya tidak ikut disentuh syncOfficialPricingPlans.
+        $validated['is_official'] = false;
+
         $plan = Plan::create($validated);
 
         return response()->json([
@@ -66,15 +74,16 @@ class AdminPlanController extends Controller
      * Update plan yang sudah ada.
      *
      * CATATAN: Perubahan plan TIDAK retroaktif ke subscription yang sudah active.
-     * Slug harus unique kecuali milik plan ini sendiri.
+     * Plan official: slug tidak bisa diubah (jadi anchor untuk sync), tapi
+     * harga/kuota/dll boleh — perubahan akan ditimpa ulang oleh sync kecuali
+     * array di Plan::officialPricingPlans() juga diupdate.
      */
     public function update(Request $request, string $id): JsonResponse
     {
         $plan = Plan::findOrFail($id);
 
-        $validated = $request->validate([
+        $rules = [
             'name' => 'sometimes|required|string|max:255',
-            'slug' => 'sometimes|required|string|max:255|unique:plans,slug,' . $plan->id,
             'description' => 'nullable|string|max:1000',
             'price' => 'sometimes|required|integer|min:0',
             'token_quota' => 'sometimes|required|integer|min:0',
@@ -83,7 +92,16 @@ class AdminPlanController extends Controller
             'features' => 'nullable|array',
             'is_active' => 'nullable|boolean',
             'sort_order' => 'nullable|integer|min:0',
-        ]);
+        ];
+
+        if (! $plan->is_official) {
+            $rules['slug'] = 'sometimes|required|string|max:255|unique:plans,slug,' . $plan->id;
+        }
+
+        $validated = $request->validate($rules);
+
+        // is_official tidak pernah bisa diubah dari API.
+        unset($validated['is_official']);
 
         $plan->update($validated);
 

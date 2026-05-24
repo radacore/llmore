@@ -30,6 +30,7 @@ class Plan extends Model
                     'Top up credit kapan saja saat kebutuhan naik',
                 ],
                 'is_active' => true,
+                'is_official' => true,
                 'sort_order' => 1,
             ],
             [
@@ -46,6 +47,7 @@ class Plan extends Model
                     'Rate limit lebih nyaman untuk produk produksi',
                 ],
                 'is_active' => true,
+                'is_official' => true,
                 'sort_order' => 2,
             ],
             [
@@ -62,24 +64,33 @@ class Plan extends Model
                     'Batas request paling lega untuk skala tim',
                 ],
                 'is_active' => true,
+                'is_official' => true,
                 'sort_order' => 3,
             ],
         ];
     }
 
     /**
-     * Keep persisted plan rows aligned with official public pricing.
-     * Legacy plans stay in the database for history, but are not active.
+     * Sinkronkan plan resmi dengan officialPricingPlans().
+     *
+     * - Hanya plan dengan is_official=true yang dievaluasi (plan custom
+     *   buatan admin TIDAK pernah disentuh di sini).
+     * - Slug official yang sudah hilang dari array kode otomatis dinonaktifkan.
+     * - Slug official yang masih ada di array kode di-upsert dengan
+     *   atribut terbaru (harga, kuota, dll) supaya source of truth = kode.
      */
     public static function syncOfficialPricingPlans(): void
     {
         $plans = self::officialPricingPlans();
         $officialSlugs = array_column($plans, 'slug');
 
-        self::whereNotIn('slug', $officialSlugs)->update(['is_active' => false]);
+        self::query()
+            ->where('is_official', true)
+            ->whereNotIn('slug', $officialSlugs)
+            ->update(['is_active' => false]);
 
         foreach ($plans as $plan) {
-            self::firstOrCreate(['slug' => $plan['slug']], $plan);
+            self::updateOrCreate(['slug' => $plan['slug']], $plan);
         }
     }
 
@@ -106,6 +117,7 @@ class Plan extends Model
         'max_api_keys',
         'features',
         'is_active',
+        'is_official',
         'sort_order',
     ];
 
@@ -123,6 +135,7 @@ class Plan extends Model
             'max_api_keys' => 'integer',
             'features' => 'array',
             'is_active' => 'boolean',
+            'is_official' => 'boolean',
             'sort_order' => 'integer',
         ];
     }
