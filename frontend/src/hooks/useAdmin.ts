@@ -100,7 +100,6 @@ export interface AdminPlan {
   max_api_keys: number;
   features: string[] | null;
   is_active: boolean;
-  is_official: boolean;
   active_subscriptions_count: number;
 }
 

@@ -31,17 +31,11 @@ class BillingController extends Controller
     // ──────────────────────────────────────────────
 
     /**
-     * Return semua active plans (official + custom).
-     *
-     * Official ditaruh duluan supaya kartu landing tetap mendahulukan paket
-     * resmi; plan custom buatan admin ikut tampil selama is_active=true.
+     * Return semua active plans untuk landing & dashboard.
      */
     public function plans(): AnonymousResourceCollection
     {
-        Plan::syncOfficialPricingPlans();
-
         $plans = Plan::active()
-            ->orderByDesc('is_official')
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
@@ -64,17 +58,15 @@ class BillingController extends Controller
 
         $plan = Plan::where('slug', $request->plan_slug)->first();
 
-        // Legacy free plan tidak perlu dibeli
-        if ($plan->slug === 'free') {
+        if (! $plan->is_active) {
             return response()->json([
-                'message' => 'Paket ini tidak perlu dibeli.',
+                'message' => 'Paket ini sedang tidak tersedia.',
             ], 422);
         }
 
-        // Legacy enterprise plan harus custom/contact sales
-        if ($plan->slug === 'enterprise') {
+        if ($plan->price <= 0) {
             return response()->json([
-                'message' => 'Paket custom memerlukan penawaran khusus. Silakan hubungi tim sales.',
+                'message' => 'Paket ini tidak perlu dibeli.',
             ], 422);
         }
 

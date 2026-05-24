@@ -250,12 +250,7 @@ function AdminPlansContent() {
                   <tr key={plan.id} className="hover:bg-pearl/60 transition-colors">
                     <td className="px-5 py-4 align-top">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-washed-black">{plan.name}</p>
-                          <Badge variant={plan.is_official ? 'info' : 'default'}>
-                            {plan.is_official ? 'Official' : 'Custom'}
-                          </Badge>
-                        </div>
+                        <p className="font-bold text-washed-black">{plan.name}</p>
                         <p className="text-xs text-silver-mist font-mono">{plan.slug}</p>
                         {plan.description && (
                           <p className="mt-1 text-sm text-dim-grey max-w-xs">{plan.description}</p>
@@ -296,18 +291,16 @@ function AdminPlansContent() {
                         >
                           Edit
                         </Button>
-                        {!plan.is_official && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openDeleteModal(plan)}
-                            leftIcon={
-                              <Trash2 className="h-3.5 w-3.5 text-red-500" />
-                            }
-                          >
-                            <span className="text-red-600">Hapus</span>
-                          </Button>
-                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openDeleteModal(plan)}
+                          leftIcon={
+                            <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                          }
+                        >
+                          <span className="text-red-600">Hapus</span>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -348,14 +341,6 @@ function AdminPlansContent() {
         }
       >
         <div className="p-6 space-y-4">
-          {editingPlan?.is_official && (
-            <div className="rounded-xl border border-blue-200 bg-blue-50 p-3 text-sm text-blue-700">
-              Plan ini adalah <strong>Official</strong>. Slug dikunci dan
-              perubahan harga/kuota akan ditimpa ulang oleh sync — update
-              juga array di <code>Plan::officialPricingPlans()</code> agar
-              perubahan persist.
-            </div>
-          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Name"
@@ -370,7 +355,6 @@ function AdminPlansContent() {
               value={form.slug}
               onChange={(e) => handleChange('slug', e.target.value)}
               error={formErrors.slug}
-              disabled={editingPlan?.is_official ?? false}
             />
           </div>
 
