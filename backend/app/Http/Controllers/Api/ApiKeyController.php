@@ -62,15 +62,6 @@ class ApiKeyController extends Controller
 
         $subscription->loadMissing('plan');
 
-        // Paket gratis (price <= 0) tidak boleh generate API key.
-        // Free plan hanya buat ekspor fitur dashboard; akses API butuh upgrade ke paket berbayar.
-        if ($subscription->plan->price <= 0) {
-            return response()->json([
-                'error' => 'paid_plan_required',
-                'message' => 'Paket gratis tidak bisa membuat API key. Upgrade ke paket berbayar untuk mengakses API.',
-            ], 422);
-        }
-
         $maxKeys = $subscription->plan->max_api_keys;
 
         // Cek apakah jumlah active keys sudah mencapai limit

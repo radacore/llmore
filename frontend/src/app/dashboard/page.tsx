@@ -12,6 +12,7 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  CreditCard,
 } from "lucide-react";
 import {
   LineChart,
@@ -112,6 +113,23 @@ export default function DashboardOverviewPage() {
           Ringkasan penggunaan dan statistik akun Anda
         </p>
       </div>
+
+      {!subLoading && !subscription && (
+        <div className="mb-8 rounded-xl border border-royal-blue/30 bg-royal-blue/5 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-royal-blue/15 text-royal-blue shrink-0">
+            <CreditCard className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-washed-black">Anda belum berlangganan paket</h3>
+            <p className="text-sm text-dim-grey mt-0.5">
+              Pilih paket untuk mulai pakai API LLMora. Sebelum berlangganan, Anda belum bisa generate API key atau memakai endpoint inference.
+            </p>
+          </div>
+          <Link href="/dashboard/billing">
+            <Button>Pilih Paket</Button>
+          </Link>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SubscriptionResource;
 use App\Http\Resources\UserResource;
-use App\Models\Plan;
-use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -89,13 +87,9 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Berikan paket Free jika user baru
-        $subscription = null;
-        if ($isNewUser) {
-            $subscription = $this->assignFreePlan($user);
-        } else {
-            $subscription = $user->activeSubscription();
-        }
+        // User pilih paket manual di /dashboard/billing.
+        // Tidak auto-assign apa pun ke user baru.
+        $subscription = $isNewUser ? null : $user->activeSubscription();
 
         // Generate Sanctum token
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -183,22 +177,13 @@ class AuthController extends Controller
             'status' => 'active',
         ]);
 
-        // Berikan paket Free otomatis
-        $subscription = $this->assignFreePlan($user);
-
+        // User pilih paket manual di /dashboard/billing setelah login.
         $token = $user->createToken('auth-token')->plainTextToken;
 
-        $response = [
+        return response()->json([
             'user' => new UserResource($user),
             'token' => $token,
-        ];
-
-        if ($subscription) {
-            $subscription->load('plan');
-            $response['subscription'] = new SubscriptionResource($subscription);
-        }
-
-        return response()->json($response, 201);
+        ], 201);
     }
 
     /**
@@ -213,28 +198,4 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Assign paket Free ke user baru.
-     *
-     * Buat subscription dengan plan Free, kuota 10.000 token,
-     * expires_at 30 hari dari sekarang.
-     */
-    private function assignFreePlan(User $user): ?Subscription
-    {
-        $freePlan = Plan::where('slug', 'free')->first();
-
-        if (! $freePlan) {
-            return null;
-        }
-
-        return Subscription::create([
-            'user_id' => $user->id,
-            'plan_id' => $freePlan->id,
-            'status' => 'active',
-            'token_quota' => $freePlan->token_quota ?? 10000,
-            'token_used' => 0,
-            'starts_at' => now(),
-            'expires_at' => now()->addDays(30),
-        ]);
-    }
 }

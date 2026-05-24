@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Key,
   Plus,
@@ -12,12 +13,14 @@ import {
   AlertCircle,
   Clock,
   Shield,
+  CreditCard,
 } from "lucide-react";
 import {
   useApiKeys,
   useCreateApiKey,
   useRevokeApiKey,
 } from "@/hooks/useApiKeys";
+import { useSubscription } from "@/hooks/useUsage";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
@@ -28,8 +31,11 @@ import { AxiosError } from "axios";
 
 export default function ApiKeysPage() {
   const { data: apiKeys, isLoading, error } = useApiKeys();
+  const { data: subscription, isLoading: isSubLoading } = useSubscription();
   const createMutation = useCreateApiKey();
   const revokeMutation = useRevokeApiKey();
+
+  const hasSubscription = !!subscription;
 
   // Modal states
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -141,10 +147,28 @@ export default function ApiKeysPage() {
         <Button
           leftIcon={<Plus className="h-4 w-4" />}
           onClick={() => setShowCreateModal(true)}
+          disabled={!hasSubscription || isSubLoading}
         >
           Generate New Key
         </Button>
       </div>
+
+      {!isSubLoading && !hasSubscription && (
+        <div className="mb-6 rounded-xl border border-royal-blue/30 bg-royal-blue/5 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-royal-blue/15 text-royal-blue shrink-0">
+            <CreditCard className="h-5 w-5" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-washed-black">Pilih paket dulu untuk generate API key</h3>
+            <p className="text-sm text-dim-grey mt-0.5">
+              Anda belum berlangganan paket apa pun. Pilih paket di halaman Billing terlebih dahulu, lalu kembali ke sini untuk generate API key.
+            </p>
+          </div>
+          <Link href="/dashboard/billing">
+            <Button>Pilih Paket</Button>
+          </Link>
+        </div>
+      )}
 
       {/* Filter Toggle */}
       {apiKeys && apiKeys.some((k) => k.status === "revoked") && (
