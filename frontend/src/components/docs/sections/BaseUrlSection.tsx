@@ -41,7 +41,7 @@ export function BaseUrlSection() {
           Production
         </span>
         <div className="font-mono text-[20px] md:text-[28px] font-bold text-pure-white tracking-tight break-all">
-          https://api.llmore.id/v1
+          https://api.llmora.id/v1
         </div>
       </div>
 

@@ -8,8 +8,8 @@ const PY_CODE = `# Install: pip install openai
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.llmore.id/v1",  # Ganti base URL ke LLMore
-    api_key="llm_sk_YOUR_KEY",            # Gunakan API key LLMore
+    base_url="https://api.llmora.id/v1",  # Ganti base URL ke LLMora
+    api_key="llm_sk_YOUR_KEY",            # Gunakan API key LLMora
 )
 
 # Gunakan persis seperti OpenAI SDK biasa
@@ -29,8 +29,8 @@ const JS_CODE = `// Install: npm install openai
 import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.llmore.id/v1',  // Ganti base URL ke LLMore
-  apiKey: 'llm_sk_YOUR_KEY',            // Gunakan API key LLMore
+  baseURL: 'https://api.llmora.id/v1',  // Ganti base URL ke LLMora
+  apiKey: 'llm_sk_YOUR_KEY',            // Gunakan API key LLMora
 });
 
 // Gunakan persis seperti OpenAI SDK biasa
@@ -53,7 +53,7 @@ export function OpenAiSdkPanel() {
         title="OpenAI SDK — Drop-in Replacement"
         subtitle="Cuma ganti baseURL & apiKey, kode lainnya tetap"
         description={
-          "LLMore sepenuhnya kompatibel dengan format OpenAI API. Kamu hanya perlu mengubah base_url dan api_key di SDK OpenAI."
+          "LLMora sepenuhnya kompatibel dengan format OpenAI API. Kamu hanya perlu mengubah base_url dan api_key di SDK OpenAI."
         }
         surface="gold"
       />

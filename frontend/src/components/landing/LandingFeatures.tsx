@@ -79,7 +79,7 @@ export function LandingFeatures() {
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
         <div data-reveal className="max-w-2xl mb-12">
           <p className="text-[11px] font-medium text-[#1009f6] uppercase tracking-[0.2em] mb-4">
-            Mengapa LLMore?
+            Mengapa LLMora?
           </p>
           <h2 className="text-washed-black font-bold text-[32px] sm:text-[40px] md:text-[48px] leading-[1.1]">
             Solusi lengkap akses AI untuk developer Indonesia.

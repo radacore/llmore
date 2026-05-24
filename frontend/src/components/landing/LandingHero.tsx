@@ -100,7 +100,7 @@ export function LandingHero() {
               <p className="text-[#ffba09] pl-6">
                 baseURL:{" "}
                 <span className="text-[#add3e5]">
-                  &quot;https://api.llmore.id/v1&quot;
+                  &quot;https://api.llmora.id/v1&quot;
                 </span>
                 ,
               </p>

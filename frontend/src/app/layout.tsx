@@ -7,7 +7,7 @@ import { ThemeProvider, ThemeScript } from "@/components/theme/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LLMore — API AI Gateway",
+  title: "LLMora — API AI Gateway",
   description:
     "Platform API AI Gateway Indonesia. Akses layanan AI premium dengan pembayaran lokal.",
 };

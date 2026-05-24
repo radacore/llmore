@@ -105,7 +105,7 @@ function DashboardSidebarContent({
       {/* Logo */}
       <div className="flex items-center gap-2 px-4 py-6">
         <Bot className="h-8 w-8 text-royal-blue" />
-        <span className="text-lg font-bold text-washed-black">LLMore</span>
+        <span className="text-lg font-bold text-washed-black">LLMora</span>
       </div>
 
       {/* Navigation */}

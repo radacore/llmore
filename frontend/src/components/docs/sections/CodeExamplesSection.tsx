@@ -5,7 +5,7 @@ import { SectionHeading } from "../DocsTextHelpers";
 import { CodeBlock } from "../CodeBlock";
 import { TabSelector } from "../TabSelector";
 
-const CURL = `curl https://api.llmore.id/v1/chat/completions \\
+const CURL = `curl https://api.llmora.id/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer llm_sk_YOUR_KEY" \\
   -d '{
@@ -21,7 +21,7 @@ const CURL = `curl https://api.llmore.id/v1/chat/completions \\
 const PYTHON = `from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.llmore.id/v1",
+    base_url="https://api.llmora.id/v1",
     api_key="llm_sk_YOUR_KEY",
 )
 
@@ -40,7 +40,7 @@ print(response.choices[0].message.content)`;
 const JAVASCRIPT = `import OpenAI from 'openai';
 
 const client = new OpenAI({
-  baseURL: 'https://api.llmore.id/v1',
+  baseURL: 'https://api.llmora.id/v1',
   apiKey: 'llm_sk_YOUR_KEY',
 });
 
@@ -57,7 +57,7 @@ const response = await client.chat.completions.create({
 console.log(response.choices[0].message.content);`;
 
 const PHP = `<?php
-$ch = curl_init('https://api.llmore.id/v1/chat/completions');
+$ch = curl_init('https://api.llmora.id/v1/chat/completions');
 
 curl_setopt_array($ch, [
     CURLOPT_POST => true,
@@ -102,8 +102,8 @@ export function CodeExamplesSection() {
       <SectionHeading id="code-examples">Code Examples</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-7">
-        Contoh integrasi LLMore API di berbagai bahasa pemrograman. Karena
-        LLMore kompatibel dengan format OpenAI, kamu bisa menggunakan SDK
+        Contoh integrasi LLMora API di berbagai bahasa pemrograman. Karena
+        LLMora kompatibel dengan format OpenAI, kamu bisa menggunakan SDK
         OpenAI di bahasa apapun.
       </p>
 

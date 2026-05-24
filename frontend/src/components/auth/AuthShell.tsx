@@ -51,7 +51,7 @@ export function AuthShell({
         >
           <span className="inline-block w-8 h-8 rounded-full bg-[#ffba09]" />
           <span className="text-[16px] font-bold text-pure-white">
-            LLMore<span className="text-[#ffba09]">.id</span>
+            LLMora<span className="text-[#ffba09]">.id</span>
           </span>
         </Link>
 
@@ -67,7 +67,7 @@ export function AuthShell({
         </div>
 
         <p className="relative text-pure-white/60 text-[12px]">
-          © {new Date().getFullYear()} LLMore.id — Dibuat untuk developer
+          © {new Date().getFullYear()} LLMora.id — Dibuat untuk developer
           Indonesia.
         </p>
       </aside>
@@ -82,7 +82,7 @@ export function AuthShell({
           >
             <span className="inline-block w-7 h-7 rounded-full bg-[#1009f6]" />
             <span className="text-[16px] font-bold text-washed-black">
-              LLMore<span className="text-[#1009f6]">.id</span>
+              LLMora<span className="text-[#1009f6]">.id</span>
             </span>
           </Link>
 

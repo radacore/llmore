@@ -1,7 +1,7 @@
 import { SectionHeading } from "../DocsTextHelpers";
 import { CodeBlock } from "../CodeBlock";
 
-const USAGE_CMD = `curl https://api.llmore.id/v1/usage \
+const USAGE_CMD = `curl https://api.llmora.id/v1/usage \
   -H "Authorization: Bearer llm_sk_YOUR_KEY"`;
 
 const USAGE_RESPONSE = `{
@@ -48,7 +48,7 @@ export function UsageSection() {
           GET
         </span>
         <code className="font-mono text-[15px] md:text-[18px] terminal-text break-all">
-          https://api.llmore.id/v1/usage
+          https://api.llmora.id/v1/usage
         </code>
       </div>
 

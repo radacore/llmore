@@ -34,5 +34,5 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`LLMore Gateway running on port ${PORT}`);
+    console.log(`LLMora Gateway running on port ${PORT}`);
 });

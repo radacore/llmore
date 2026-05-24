@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# LLMore.id — Local Dev Starter
+# LLMora.id — Local Dev Starter
 # Menjalankan semua service (Postgres, Redis, Backend, Gateway, Frontend,
 # Scheduler, Queue) secara paralel. Tekan Ctrl+C untuk menghentikan semuanya.
 # =============================================================================

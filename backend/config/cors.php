@@ -7,7 +7,7 @@ return [
     | Cross-Origin Resource Sharing (CORS) Configuration
     |--------------------------------------------------------------------------
     |
-    | Konfigurasi CORS untuk LLMore.id API.
+    | Konfigurasi CORS untuk LLMora.id API.
     | Frontend Next.js berjalan di domain terpisah, sehingga CORS harus
     | dikonfigurasi agar request dari frontend diterima.
     |

@@ -1,9 +1,9 @@
-# PRD: DaengBisa.id — Platform API AI Gateway
+# PRD: LLMora.id — Platform API AI Gateway
 
 > **Versi:** 1.0.0
 > **Tanggal:** 1 Mei 2026
 > **Status:** Draft
-> **Author:** Tim DaengBisa
+> **Author:** Tim LLMora
 
 ---
 
@@ -105,7 +105,7 @@ Platform ini **TIDAK** menjalankan model AI sendiri. Semua inferensi dilakukan o
 
 ```mermaid
 flowchart TD
-    A[User membuka daengbisa.id] --> B[Login with Google OAuth]
+    A[User membuka llmora.id] --> B[Login with Google OAuth]
     B --> C[Masuk ke Dashboard]
     C --> D[Pilih Paket / Lihat Pricing]
     D --> E{Paket Free?}
@@ -133,7 +133,7 @@ flowchart TD
 ### Fase Detail
 
 #### Fase 1: Onboarding & Transaksi
-1. User membuka **daengbisa.id** dan melakukan **Login with Google** (OAuth 2.0)
+1. User membuka **llmora.id** dan melakukan **Login with Google** (OAuth 2.0)
 2. User masuk ke dashboard, melihat daftar paket, lalu klik **Beli**
 3. Muncul pop-up **QRIS via Midtrans**. User scan dan bayar
 4. Sistem Laravel menerima **webhook Midtrans**, mengaktifkan status user dan memberi kuota token sesuai paket
@@ -181,7 +181,7 @@ flowchart LR
         A[User App / Browser]
     end
 
-    subgraph DaengBisa VPS
+    subgraph LLMora VPS
         B[Nginx Reverse Proxy]
         C[Laravel Octane - Main API]
         D[Node.js Sidecar - Streaming Proxy]
@@ -329,7 +329,7 @@ flowchart LR
 ### Base URL
 
 ```
-https://api.daengbisa.id/v1
+https://api.llmora.id/v1
 ```
 
 ### Authentication

@@ -1,6 +1,6 @@
-# 🚀 Tutorial Menjalankan LLMore.id Secara Lokal
+# 🚀 Tutorial Menjalankan LLMora.id Secara Lokal
 
-Panduan lengkap untuk menjalankan proyek **LLMore.id — AI Gateway Platform** di lingkungan development lokal.
+Panduan lengkap untuk menjalankan proyek **LLMora.id — AI Gateway Platform** di lingkungan development lokal.
 
 ---
 
@@ -150,7 +150,7 @@ cp .env.example .env
 Edit file `backend/.env` dengan konfigurasi berikut:
 
 ```env
-APP_NAME=LLMore
+APP_NAME=LLMora
 APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
@@ -391,7 +391,7 @@ docker compose down -v
 ### 📦 `backend/.env` — Contoh Lengkap
 
 ```env
-APP_NAME=LLMore
+APP_NAME=LLMora
 APP_ENV=local
 APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 APP_DEBUG=true
@@ -532,7 +532,7 @@ Setelah menjalankan `php artisan db:seed`, akun berikut tersedia:
 
 | Role  | Email                  | Password   |
 |-------|------------------------|------------|
-| Admin | `admin@llmore.id`   | `password` |
+| Admin | `admin@llmora.id`   | `password` |
 
 ### Akses Dashboard
 
@@ -804,9 +804,9 @@ cp .env.example .env
 node src/index.js &
 
 # ✅ Buka http://localhost:3000
-# 🔐 Login: admin@llmore.id / password
+# 🔐 Login: admin@llmora.id / password
 ```
 
 ---
 
-> 📖 **LLMore.id** — AI Gateway Platform untuk developer Indonesia 🇮🇩
+> 📖 **LLMora.id** — AI Gateway Platform untuk developer Indonesia 🇮🇩

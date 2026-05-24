@@ -11,7 +11,7 @@ export function LandingNav() {
           <Link href="/" className="flex items-center gap-2">
             <span className="inline-block w-8 h-8 rounded-full bg-[#1009f6]" />
             <span className="text-[16px] font-bold text-washed-black tracking-tight">
-              LLMore<span className="text-[#1009f6]">.id</span>
+              LLMora<span className="text-[#1009f6]">.id</span>
             </span>
           </Link>
 

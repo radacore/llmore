@@ -8,7 +8,7 @@ export function AuthenticationSection() {
       <SectionHeading id="authentication">Authentication</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-5">
-        Semua request ke LLMore API harus menyertakan API key di header{" "}
+        Semua request ke LLMora API harus menyertakan API key di header{" "}
         <InlineCode>Authorization</InlineCode>.
       </p>
 
@@ -51,7 +51,7 @@ export function AuthenticationSection() {
               href="/dashboard"
               className="text-[#1009f6] font-bold hover:underline"
             >
-              Dashboard LLMore
+              Dashboard LLMora
             </Link>
           </>,
           <>

@@ -93,7 +93,7 @@ function AdminDashboardContent() {
           Admin Dashboard
         </h1>
         <p className="mt-1 text-dim-grey">
-          Overview statistik dan aktivitas platform LLMore
+          Overview statistik dan aktivitas platform LLMora
         </p>
       </div>
 

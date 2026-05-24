@@ -40,7 +40,7 @@ const steps = [
   {
     n: 3,
     title: "Kirim request pertama",
-    body: <>Gunakan cURL atau SDK favorit untuk kirim request ke LLMore API.</>,
+    body: <>Gunakan cURL atau SDK favorit untuk kirim request ke LLMora API.</>,
   },
 ];
 
@@ -50,7 +50,7 @@ export function QuickStartSection() {
       <SectionHeading id="quick-start">Quick Start</SectionHeading>
 
       <p className="text-[15px] text-dim-grey leading-[1.7] mb-7">
-        Mulai pakai LLMore API dalam 3 langkah sederhana:
+        Mulai pakai LLMora API dalam 3 langkah sederhana:
       </p>
 
       <ol className="space-y-4 mb-7">
@@ -76,7 +76,7 @@ export function QuickStartSection() {
 
       <CodeBlock
         language="bash"
-        code={`curl https://api.llmore.id/v1/chat/completions \\
+        code={`curl https://api.llmora.id/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer llm_sk_YOUR_KEY" \\
   -d '{

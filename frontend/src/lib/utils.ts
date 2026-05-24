@@ -1,5 +1,5 @@
 /**
- * Utility functions for LLMore frontend
+ * Utility functions for LLMora frontend
  */
 
 /**

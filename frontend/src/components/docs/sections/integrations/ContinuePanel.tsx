@@ -7,32 +7,32 @@ import { IntegrationHeader, IntegrationStep } from "./IntegrationHeader";
 const CONFIG_JSON = `{
   "models": [
     {
-      "title": "LLMore - Claude Haiku 4.5",
+      "title": "LLMora - Claude Haiku 4.5",
       "provider": "openai",
       "model": "anthropic/claude-haiku-4-5",
-      "apiBase": "https://api.llmore.id/v1",
+      "apiBase": "https://api.llmora.id/v1",
       "apiKey": "llm_sk_YOUR_KEY"
     },
     {
-      "title": "LLMore - GPT-4o",
+      "title": "LLMora - GPT-4o",
       "provider": "openai",
       "model": "openai/gpt-4o",
-      "apiBase": "https://api.llmore.id/v1",
+      "apiBase": "https://api.llmora.id/v1",
       "apiKey": "llm_sk_YOUR_KEY"
     },
     {
-      "title": "LLMore - DeepSeek V3",
+      "title": "LLMora - DeepSeek V3",
       "provider": "openai",
       "model": "deepseek/deepseek-chat-v3-0324",
-      "apiBase": "https://api.llmore.id/v1",
+      "apiBase": "https://api.llmora.id/v1",
       "apiKey": "llm_sk_YOUR_KEY"
     }
   ],
   "tabAutocompleteModel": {
-    "title": "LLMore - Claude Haiku",
+    "title": "LLMora - Claude Haiku",
     "provider": "openai",
     "model": "anthropic/claude-haiku-4-5",
-    "apiBase": "https://api.llmore.id/v1",
+    "apiBase": "https://api.llmora.id/v1",
     "apiKey": "llm_sk_YOUR_KEY"
   }
 }`;
@@ -48,7 +48,7 @@ export function ContinuePanel() {
       />
 
       <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4">
-        Tutorial Setup Continue.dev + LLMore
+        Tutorial Setup Continue.dev + LLMora
       </p>
 
       <div className="space-y-4 mb-6">
@@ -60,7 +60,7 @@ export function ContinuePanel() {
           Edit file <InlineCode>~/.continue/config.json</InlineCode>.
         </IntegrationStep>
 
-        <IntegrationStep n={3} title="Tambahkan provider LLMore">
+        <IntegrationStep n={3} title="Tambahkan provider LLMora">
           Tambahkan konfigurasi provider seperti contoh di bawah.
         </IntegrationStep>
       </div>

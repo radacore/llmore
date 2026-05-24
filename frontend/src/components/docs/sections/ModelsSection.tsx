@@ -74,7 +74,7 @@ const providerStyle: Record<string, string> = {
   xAI: "bg-washed-black text-pure-white",
 };
 
-const LIST_MODELS_CMD = `curl https://api.llmore.id/v1/models \\
+const LIST_MODELS_CMD = `curl https://api.llmora.id/v1/models \\
   -H "Authorization: Bearer llm_sk_YOUR_KEY"`;
 
 export function ModelsSection() {
@@ -94,7 +94,7 @@ export function ModelsSection() {
       <SectionHeading id="models">Models</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-7">
-        LLMore menyediakan akses ke{" "}
+        LLMora menyediakan akses ke{" "}
         <strong className="font-bold">49+ model AI</strong> dari berbagai
         provider. Berikut beberapa model populer yang tersedia:
       </p>

@@ -16,15 +16,15 @@ class MultipleAdminSeeder extends Seeder
         $admins = [
             [
                 'name' => 'Admin Satu',
-                'email' => 'admin1@llmore.id',
+                'email' => 'admin1@llmora.id',
             ],
             [
                 'name' => 'Admin Dua',
-                'email' => 'admin2@llmore.id',
+                'email' => 'admin2@llmora.id',
             ],
             [
                 'name' => 'Admin Tiga',
-                'email' => 'admin3@llmore.id',
+                'email' => 'admin3@llmora.id',
             ],
         ];
 
@@ -42,6 +42,6 @@ class MultipleAdminSeeder extends Seeder
             );
         }
 
-        $this->command->info('✓ 3 admin users seeded (admin1@, admin2@, admin3@llmore.id) — password: "password"');
+        $this->command->info('✓ 3 admin users seeded (admin1@, admin2@, admin3@llmora.id) — password: "password"');
     }
 }

@@ -64,7 +64,7 @@ services:
     restart: unless-stopped
     environment:
       - NEXT_PUBLIC_API_URL=http://localhost/api
-      - NEXT_PUBLIC_GATEWAY_URL=http://api.llmore.id
+      - NEXT_PUBLIC_GATEWAY_URL=http://api.llmora.id
     volumes:
       - ./frontend:/app
       - /app/node_modules

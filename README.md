@@ -1,8 +1,8 @@
-# LLMore.id
+# LLMora.id
 
 **Platform API Gateway AI untuk developer Indonesia** - akses model AI premium melalui satu endpoint OpenAI-compatible dengan billing lokal.
 
-![LLMore.id](https://img.shields.io/badge/LLMore-API%20Gateway-indigo)
+![LLMora.id](https://img.shields.io/badge/LLMora-API%20Gateway-indigo)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 ---
@@ -24,7 +24,7 @@
 
 ## Tentang
 
-LLMore.id adalah platform API gateway yang memudahkan integrasi AI untuk developer di Indonesia.
+LLMora.id adalah platform API gateway yang memudahkan integrasi AI untuk developer di Indonesia.
 
 Fitur utama:
 

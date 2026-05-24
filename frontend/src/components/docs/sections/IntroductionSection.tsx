@@ -69,7 +69,7 @@ export function IntroductionSection() {
       <SectionHeading id="introduction">Introduction</SectionHeading>
 
       <p className="text-[16px] text-washed-black leading-[1.7] mb-5">
-        <strong className="font-bold">LLMore</strong> adalah API AI Gateway
+        <strong className="font-bold">LLMora</strong> adalah API AI Gateway
         yang memberikan akses ke{" "}
         <strong className="font-bold">49+ model AI</strong> dari berbagai
         provider terkemuka melalui satu endpoint yang seragam.
@@ -80,12 +80,12 @@ export function IntroductionSection() {
         <strong className="font-bold text-washed-black">
           100% kompatibel dengan OpenAI API
         </strong>
-        , kamu dapat mengintegrasikan LLMore ke aplikasi, tools, dan workflow
+        , kamu dapat mengintegrasikan LLMora ke aplikasi, tools, dan workflow
         yang sudah ada — tanpa perlu mengubah kode.
       </p>
 
       <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4">
-        Kenapa LLMore?
+        Kenapa LLMora?
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

@@ -9,13 +9,13 @@ export function RooCodePanel() {
       <IntegrationHeader
         icon={Code2}
         title="Roo Code — VS Code AI Extension"
-        subtitle="Gunakan LLMore sebagai AI provider di VS Code"
-        description="Roo Code adalah extension VS Code yang powerful untuk AI-assisted coding. Dengan LLMore, kamu bisa pakai 49+ model AI langsung di editor."
+        subtitle="Gunakan LLMora sebagai AI provider di VS Code"
+        description="Roo Code adalah extension VS Code yang powerful untuk AI-assisted coding. Dengan LLMora, kamu bisa pakai 49+ model AI langsung di editor."
         surface="blue"
       />
 
       <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4">
-        Tutorial Setup Roo Code + LLMore
+        Tutorial Setup Roo Code + LLMora
       </p>
 
       <div className="space-y-4">
@@ -60,7 +60,7 @@ export function RooCodePanel() {
                 Base URL
               </span>
               <code className="bg-beige text-[#1009f6] px-2.5 py-1 rounded-[4.375px] text-[13px] font-mono border border-silver-mist/40">
-                https://api.llmore.id/v1
+                https://api.llmora.id/v1
               </code>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
@@ -94,7 +94,7 @@ export function RooCodePanel() {
         </IntegrationStep>
 
         <IntegrationStep n={6} title="Save dan mulai coding! 🎉" highlight>
-          Klik Save. Sekarang kamu bisa pakai Roo Code dengan LLMore. Buka
+          Klik Save. Sekarang kamu bisa pakai Roo Code dengan LLMora. Buka
           panel Roo Code dan mulai chat dengan AI langsung di VS Code.
         </IntegrationStep>
       </div>

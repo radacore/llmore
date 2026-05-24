@@ -54,7 +54,7 @@ export function ChatCompletionsSection() {
           POST
         </span>
         <code className="font-mono text-[15px] md:text-[18px] terminal-text break-all">
-          https://api.llmore.id/v1/chat/completions
+          https://api.llmora.id/v1/chat/completions
         </code>
       </div>
 

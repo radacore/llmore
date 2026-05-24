@@ -120,7 +120,7 @@ export default function ApiKeysPage() {
             API Keys
           </h1>
           <p className="mt-1 text-dim-grey">
-            Kelola API keys untuk mengakses LLMore API
+            Kelola API keys untuk mengakses LLMora API
           </p>
         </div>
         <Button
@@ -315,7 +315,7 @@ export default function ApiKeysPage() {
             Belum Ada API Key
           </h2>
           <p className="text-dim-grey max-w-md mx-auto mb-6">
-            Buat API key pertama Anda untuk mulai menggunakan LLMore API. Setiap
+            Buat API key pertama Anda untuk mulai menggunakan LLMora API. Setiap
             key dapat digunakan untuk mengautentikasi request ke API.
           </p>
           <Button

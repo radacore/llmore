@@ -9,10 +9,10 @@ export function SdksSection() {
       <SectionHeading id="sdks">SDKs</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-8">
-        Saat ini LLMore sepenuhnya kompatibel dengan{" "}
+        Saat ini LLMora sepenuhnya kompatibel dengan{" "}
         <strong className="font-bold">OpenAI SDK</strong>. Gunakan SDK OpenAI
         resmi di bahasa pemrograman favorit kamu — cukup ubah base URL ke
-        LLMore.
+        LLMora.
       </p>
 
       <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4">
@@ -60,10 +60,10 @@ export function SdksSection() {
             Coming soon
           </span>
           <h4 className="text-pure-white font-bold text-[24px] md:text-[28px] leading-[1.2] mb-3">
-            LLMore Native SDK
+            LLMora Native SDK
           </h4>
           <p className="text-pure-white/85 text-[14px] leading-[1.6] max-w-xl mb-5">
-            Kami sedang mengembangkan SDK native LLMore untuk Python,
+            Kami sedang mengembangkan SDK native LLMora untuk Python,
             JavaScript, PHP, dan Go yang akan menyediakan fitur tambahan
             seperti automatic retry, quota monitoring, dan model switching.
             Stay tuned!
@@ -75,7 +75,7 @@ export function SdksSection() {
       <div className="border-t border-washed-black/10 pt-8 mt-12">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-[12px] text-dim-grey">
-            © {new Date().getFullYear()} LLMore.id — API AI Gateway
+            © {new Date().getFullYear()} LLMora.id — API AI Gateway
             Indonesia
           </p>
           <div className="flex flex-wrap items-center gap-2">

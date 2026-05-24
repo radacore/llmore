@@ -58,7 +58,7 @@ export function LandingFooter() {
           <div className="flex items-center gap-2">
             <span className="inline-block w-7 h-7 rounded-full bg-[#ffba09]" />
             <span className="text-washed-black font-bold text-[16px]">
-              LLMore<span className="text-[#ffba09]">.id</span>
+              LLMora<span className="text-[#ffba09]">.id</span>
             </span>
           </div>
 
@@ -80,7 +80,7 @@ export function LandingFooter() {
 
         <div className="mt-10 pt-6 border-t border-washed-black/10 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-[12px] text-dim-grey">
           <p>
-            © {new Date().getFullYear()} LLMore.id — Dibuat dengan ❤️ untuk
+            © {new Date().getFullYear()} LLMora.id — Dibuat dengan ❤️ untuk
             developer Indonesia.
           </p>
           <p>API AI terjangkau, bayar pakai QRIS.</p>

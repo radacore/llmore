@@ -18,7 +18,7 @@ export function IntegrationsSection() {
       <SectionHeading id="integrations">Integrations</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-7">
-        Karena LLMore kompatibel dengan format OpenAI API, kamu bisa pakai di
+        Karena LLMora kompatibel dengan format OpenAI API, kamu bisa pakai di
         berbagai tools dan extension populer. Berikut tutorial setup untuk
         setiap platform:
       </p>

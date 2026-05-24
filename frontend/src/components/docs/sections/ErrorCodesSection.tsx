@@ -42,7 +42,7 @@ const errors: ErrorEntry[] = [
   {
     code: "500",
     status: "Internal Server Error",
-    description: "Error di server LLMore. Coba lagi nanti.",
+    description: "Error di server LLMora. Coba lagi nanti.",
     severity: "server",
   },
   {
@@ -74,7 +74,7 @@ export function ErrorCodesSection() {
       <SectionHeading id="error-codes">Error Codes</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-7">
-        LLMore API menggunakan HTTP status code standar. Berikut daftar error
+        LLMora API menggunakan HTTP status code standar. Berikut daftar error
         yang mungkin terjadi:
       </p>
 

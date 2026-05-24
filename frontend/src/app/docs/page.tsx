@@ -72,7 +72,7 @@ function DocsTopBar({ onOpenMobileMenu }: { onOpenMobileMenu: () => void }) {
           <Link href="/" className="flex items-center gap-2">
             <span className="inline-block w-7 h-7 rounded-full bg-[#1009f6]" />
             <span className="text-[15px] font-bold text-washed-black">
-              LLMore<span className="text-[#1009f6]">.id</span>
+              LLMora<span className="text-[#1009f6]">.id</span>
             </span>
           </Link>
 
@@ -149,7 +149,7 @@ export default function DocsPage() {
             {/* Hero block dokumentasi */}
             <div className="mb-12">
               <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4">
-                Dokumentasi LLMore.id
+                Dokumentasi LLMora.id
               </p>
               <h1 className="text-[40px] md:text-[56px] font-bold text-washed-black leading-[1.05] tracking-tight">
                 Bangun aplikasi AI{" "}
@@ -163,7 +163,7 @@ export default function DocsPage() {
                 .
               </h1>
               <p className="mt-5 text-[16px] text-dim-grey leading-[1.6] max-w-2xl">
-                Panduan lengkap menggunakan API LLMore.id — kompatibel dengan
+                Panduan lengkap menggunakan API LLMora.id — kompatibel dengan
                 OpenAI SDK, dengan pembayaran lokal Indonesia.
               </p>
             </div>

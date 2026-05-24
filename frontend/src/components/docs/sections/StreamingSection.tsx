@@ -16,7 +16,7 @@ data: {"id":"chatcmpl-abc123","object":"chat.completion.chunk","choices":[{"inde
 
 data: [DONE]`;
 
-const STREAM_JS = `const response = await fetch('https://api.llmore.id/v1/chat/completions', {
+const STREAM_JS = `const response = await fetch('https://api.llmora.id/v1/chat/completions', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ while (true) {
 const STREAM_PY = `from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.llmore.id/v1",
+    base_url="https://api.llmora.id/v1",
     api_key="llm_sk_YOUR_KEY",
 )
 

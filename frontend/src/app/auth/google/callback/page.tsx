@@ -63,7 +63,7 @@ function GoogleCallbackContent() {
         <div className="flex items-center justify-center gap-2 mb-8">
           <Bot className="h-8 w-8 text-indigo-600" />
           <span className="text-xl font-bold text-gray-900">
-            LLMore
+            LLMora
           </span>
         </div>
         <Loader2 className="h-10 w-10 text-indigo-600 animate-spin mx-auto mb-4" />
