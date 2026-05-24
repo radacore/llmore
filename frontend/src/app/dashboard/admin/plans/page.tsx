@@ -299,7 +299,7 @@ function AdminPlansContent() {
                           Edit
                         </Button>
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={() => openDeleteModal(plan)}
                           leftIcon={

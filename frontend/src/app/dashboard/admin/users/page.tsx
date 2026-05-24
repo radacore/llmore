@@ -307,10 +307,10 @@ function AdminUsersContent() {
                       {formatDate(user.created_at)}
                     </td>
                     <td className="px-6 py-3">
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2">
                         <Link href={`/dashboard/admin/users/${user.id}`}>
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             leftIcon={<Eye className="h-3.5 w-3.5" />}
                           >
@@ -321,7 +321,7 @@ function AdminUsersContent() {
                         {user.role !== "admin" &&
                           (user.status === "active" ? (
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => handleSuspend(user.id)}
                               isLoading={updateStatus.isPending}
@@ -333,7 +333,7 @@ function AdminUsersContent() {
                             </Button>
                           ) : (
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
                               onClick={() => handleActivate(user.id)}
                               isLoading={updateStatus.isPending}
@@ -346,7 +346,7 @@ function AdminUsersContent() {
                           ))}
                         {user.role !== "admin" && (
                           <Button
-                            variant="ghost"
+                            variant="outline"
                             size="sm"
                             onClick={() =>
                               handleDelete({
