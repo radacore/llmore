@@ -23,10 +23,16 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('user');
+    if (error.response?.status === 401 && typeof window !== 'undefined') {
+      // Bersihkan token + Zustand persist store (key: auth-storage).
+      // Tanpa ini, persist masih punya isAuthenticated=true → /login akan
+      // auto-redirect balik ke dashboard → reload loop tanpa henti.
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      localStorage.removeItem('auth-storage');
+
+      // Skip hard-reload kalau sudah berada di /login (cegah loop).
+      if (window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
     }

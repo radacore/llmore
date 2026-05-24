@@ -1,11 +1,22 @@
 # ===========================================
-# DaengBisa.id - Git Ignore
+# LLMora.id - Git Ignore
 # ===========================================
 
 # Environment files
 .env
 .env.local
 .env.*.local
+llm-proxy-vps/.env
+llm-proxy-vps/.venv/
+llm-proxy-vps/data/
+llm-proxy-vps/proxy.log
+llm-proxy-vps/__pycache__/
+llm-proxy-vps/app/__pycache__/
+
+# === Agent / Tooling state (lokal saja) ===
+.cocoindex_code/
+.playwright-mcp/
+.sisyphus/
 
 # === Node.js ===
 node_modules/
