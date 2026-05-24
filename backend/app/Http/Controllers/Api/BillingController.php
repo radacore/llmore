@@ -31,15 +31,19 @@ class BillingController extends Controller
     // ──────────────────────────────────────────────
 
     /**
-     * Return semua active plans.
+     * Return semua active plans (official + custom).
+     *
+     * Official ditaruh duluan supaya kartu landing tetap mendahulukan paket
+     * resmi; plan custom buatan admin ikut tampil selama is_active=true.
      */
     public function plans(): AnonymousResourceCollection
     {
         Plan::syncOfficialPricingPlans();
 
         $plans = Plan::active()
-            ->whereIn('slug', Plan::officialPricingSlugs())
+            ->orderByDesc('is_official')
             ->orderBy('sort_order')
+            ->orderBy('id')
             ->get();
 
         return PlanResource::collection($plans);
