@@ -137,7 +137,7 @@ export default function BillingPage() {
         {subLoading ? (
           <div className="h-24 bg-pearl rounded-xl animate-pulse" />
         ) : subscription ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-royal-blue/10 rounded-xl">
               <p className="text-xs text-royal-blue font-medium uppercase tracking-wider mb-1">
                 Paket
@@ -153,20 +153,6 @@ export default function BillingPage() {
                 {formatCurrency(subscription?.plan?.price ?? 0)}
                 <span className="text-sm font-normal text-silver-mist">/bln</span>
               </p>
-            </div>
-            <div className="p-4 bg-pearl rounded-xl">
-              <p className="text-xs text-dim-grey font-medium uppercase tracking-wider mb-1">
-                Sisa Credit
-              </p>
-              <p className="text-lg font-bold text-washed-black">
-                {formatNumber(subscription.remaining_tokens ?? 0)}
-              </p>
-              <div className="w-full bg-concrete rounded-full h-1.5 mt-2">
-                <div
-                  className="bg-royal-blue h-1.5 rounded-full"
-                  style={{ width: `${Math.min(subscription.usage_percentage ?? 0, 100)}%` }}
-                />
-              </div>
             </div>
             <div className="p-4 bg-pearl rounded-xl">
               <p className="text-xs text-dim-grey font-medium uppercase tracking-wider mb-1">

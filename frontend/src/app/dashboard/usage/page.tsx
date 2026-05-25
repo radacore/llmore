@@ -9,7 +9,6 @@ import {
   Activity,
   TrendingUp,
   Clock,
-  Coins,
 } from 'lucide-react';
 import {
   AreaChart,
@@ -23,15 +22,14 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useUsageSummary, useSubscription } from '@/hooks/useUsage';
-import { Badge } from '@/components/ui/Badge';
-import { formatNumber, formatDate, formatDateShort } from '@/lib/utils';
+import { formatNumber, formatDateShort } from '@/lib/utils';
 
 type Period = 7 | 30 | 90;
 
 export default function UsagePage() {
   const [period, setPeriod] = useState<Period>(7);
   const { data: usage, isLoading: usageLoading, error: usageError } = useUsageSummary();
-  const { data: subscription, isLoading: subLoading } = useSubscription();
+  const { isLoading: subLoading } = useSubscription();
 
   const chartData = useMemo(() => {
     if (!usage?.daily_usage) return [];
@@ -59,11 +57,6 @@ export default function UsagePage() {
       avgResponseTime: usage.avg_response_time_ms ?? 0,
     };
   }, [usage, period]);
-
-  const tokenQuota = subscription?.token_quota ?? usage?.token_quota ?? 0;
-  const tokenUsed = subscription?.token_used ?? usage?.token_used ?? 0;
-  const remainingTokens = subscription?.remaining_tokens ?? (tokenQuota - tokenUsed);
-  const usagePercentage = subscription?.usage_percentage ?? (tokenQuota > 0 ? Math.round((tokenUsed / tokenQuota) * 100) : 0);
 
   if (usageError) {
     return (
@@ -289,75 +282,6 @@ export default function UsagePage() {
         </div>
       </div>
 
-      {/* Credit Info Card */}
-      <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
-        <h2 className="text-lg font-semibold text-washed-black mb-4 flex items-center gap-2">
-          <Coins className="h-5 w-5 text-royal-blue" />
-          Informasi Credit
-        </h2>
-
-        {isLoading ? (
-          <div className="space-y-3">
-            <div className="h-6 bg-beige rounded-lg animate-pulse w-1/3" />
-            <div className="h-4 bg-beige rounded-full animate-pulse" />
-            <div className="h-4 bg-beige rounded-lg animate-pulse w-1/2" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Progress Bar */}
-            <div className="md:col-span-2">
-              <div className="flex items-center justify-between text-sm mb-2">
-                <span className="text-dim-grey">
-                  {formatNumber(tokenUsed)} / {formatNumber(tokenQuota)} credit
-                </span>
-                <span className="font-medium text-washed-black">
-                  {Math.round(usagePercentage)}% terpakai
-                </span>
-              </div>
-              <div className="w-full bg-beige rounded-full h-4">
-                <div
-                  className={`h-4 rounded-full transition-all duration-500 ${
-                    usagePercentage > 90
-                      ? 'bg-red-500'
-                      : usagePercentage > 70
-                        ? 'bg-orange-500'
-                        : 'bg-royal-blue'
-                  }`}
-                  style={{ width: `${Math.min(usagePercentage, 100)}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-xs text-silver-mist">0</span>
-                <span className="text-xs text-silver-mist">{formatNumber(tokenQuota)}</span>
-              </div>
-            </div>
-
-            {/* Credit Details */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
-                <span className="text-sm text-dim-grey">Sisa Credit</span>
-                <span className="text-sm font-semibold text-washed-black">
-                  {formatNumber(remainingTokens)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
-                <span className="text-sm text-dim-grey">Paket</span>
-                <Badge variant={subscription?.status === 'active' ? 'success' : 'default'}>
-                  {subscription?.plan?.name ?? '-'}
-                </Badge>
-              </div>
-              {usage?.quota_reset_date && (
-                <div className="flex items-center justify-between p-3 bg-pearl rounded-xl">
-                  <span className="text-sm text-dim-grey">Reset Credit</span>
-                  <span className="text-sm font-medium text-washed-black">
-                    {formatDate(usage.quota_reset_date)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
