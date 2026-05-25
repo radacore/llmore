@@ -93,11 +93,11 @@ class UserController extends Controller
     /**
      * Get usage summary untuk user.
      *
-     * Meliputi:
-     * - Total token dipakai bulan ini
-     * - Total request bulan ini
-     * - Usage per hari (7 hari terakhir)
-     * - Top models used
+     * Hasil di-scope ke subscription aktif saat ini: penggunaan dari plan lama
+     * (yang sudah expired) TIDAK ikut diagregat. Tanpa filter ini, card "Credit
+     * Terpakai" akan terlihat tidak sinkron dengan "Sisa Credit" setiap kali
+     * user pindah plan, karena Redis quota di-reset per subscription baru tapi
+     * usage_logs historis tetap ada untuk audit.
      */
     public function usageSummary(Request $request): JsonResponse
     {
@@ -106,18 +106,24 @@ class UserController extends Controller
         $startOfMonth = $now->copy()->startOfMonth();
         $sevenDaysAgo = $now->copy()->subDays(7)->startOfDay();
 
+        $activeSubscription = $user->activeSubscription();
+        $activeSubscriptionId = $activeSubscription?->id;
+
+        $baseQuery = fn () => UsageLog::where('user_id', $user->id)
+            ->when($activeSubscriptionId, fn ($q) => $q->where('subscription_id', $activeSubscriptionId));
+
         // Total token dipakai bulan ini
-        $monthlyTokens = UsageLog::where('user_id', $user->id)
+        $monthlyTokens = $baseQuery()
             ->where('created_at', '>=', $startOfMonth)
             ->sum('total_tokens');
 
         // Total request bulan ini
-        $monthlyRequests = UsageLog::where('user_id', $user->id)
+        $monthlyRequests = $baseQuery()
             ->where('created_at', '>=', $startOfMonth)
             ->count();
 
         // Usage per hari (7 hari terakhir)
-        $dailyUsage = UsageLog::where('user_id', $user->id)
+        $dailyUsage = $baseQuery()
             ->where('created_at', '>=', $sevenDaysAgo)
             ->select(
                 DB::raw('DATE(created_at) as date'),
@@ -129,7 +135,7 @@ class UserController extends Controller
             ->get();
 
         // Top models used (bulan ini)
-        $topModels = UsageLog::where('user_id', $user->id)
+        $topModels = $baseQuery()
             ->where('created_at', '>=', $startOfMonth)
             ->select(
                 'model',
@@ -142,7 +148,7 @@ class UserController extends Controller
             ->get();
 
         // Average response time bulan ini
-        $avgResponseTime = UsageLog::where('user_id', $user->id)
+        $avgResponseTime = $baseQuery()
             ->where('created_at', '>=', $startOfMonth)
             ->where('response_time_ms', '>', 0)
             ->avg('response_time_ms');
