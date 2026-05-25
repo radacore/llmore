@@ -79,7 +79,7 @@ export default function UsagePage() {
           Usage Analytics
         </h1>
         <p className="mt-1 text-dim-grey">
-          Pantau penggunaan credit dan request API Anda
+          Pantau penggunaan token dan request API Anda
         </p>
       </div>
 
@@ -108,7 +108,7 @@ export default function UsagePage() {
               <Zap className="h-4 w-4 text-royal-blue" />
             </div>
             <span className="text-xs font-medium text-dim-grey uppercase tracking-wider">
-              Total Credit
+              Total Token
             </span>
           </div>
           {isLoading ? (
@@ -144,7 +144,7 @@ export default function UsagePage() {
               <TrendingUp className="h-4 w-4 text-orange-600" />
             </div>
             <span className="text-xs font-medium text-dim-grey uppercase tracking-wider">
-              Avg Credit/Request
+              Avg Token/Request
             </span>
           </div>
           {isLoading ? (
@@ -178,10 +178,10 @@ export default function UsagePage() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* Credit Usage Area Chart */}
+        {/* Token Usage Area Chart */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <h2 className="text-lg font-semibold text-washed-black mb-4">
-            Credit Usage per Hari
+            Token Usage per Hari
           </h2>
           {isLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -213,7 +213,7 @@ export default function UsagePage() {
                       border: '1px solid #e5e7eb',
                       boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
                     }}
-                    formatter={(value) => [formatNumber(Number(value)), 'Credit']}
+                    formatter={(value) => [formatNumber(Number(value)), 'Token']}
                   />
                   <Area
                     type="monotone"

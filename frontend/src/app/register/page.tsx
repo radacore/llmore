@@ -92,11 +92,11 @@ export default function RegisterPage() {
           kamu.
         </>
       }
-      brandSubcopy="Daftar dan mulai dengan paket berbasis credit. Bayar pakai QRIS, tanpa kartu kredit luar negeri."
+      brandSubcopy="Daftar dan mulai dengan paket berbasis token. Bayar pakai QRIS, tanpa kartu kredit luar negeri."
       brandExtras={
         <div className="space-y-3">
-          <BrandBullet>Paket Basic berisi 70.000 credit/bulan</BrandBullet>
-          <BrandBullet>Akses model AI melalui credit bulanan</BrandBullet>
+          <BrandBullet>Paket Basic berisi 70.000 token/bulan</BrandBullet>
+          <BrandBullet>Akses model AI melalui token bulanan</BrandBullet>
           <BrandBullet>Bayar pakai QRIS, bukan kartu kredit</BrandBullet>
         </div>
       }

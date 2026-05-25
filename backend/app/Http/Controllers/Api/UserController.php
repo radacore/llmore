@@ -94,8 +94,8 @@ class UserController extends Controller
      * Get usage summary untuk user.
      *
      * Hasil di-scope ke subscription aktif saat ini: penggunaan dari plan lama
-     * (yang sudah expired) TIDAK ikut diagregat. Tanpa filter ini, card "Credit
-     * Terpakai" akan terlihat tidak sinkron dengan "Sisa Credit" setiap kali
+     * (yang sudah expired) TIDAK ikut diagregat. Tanpa filter ini, card "Token
+     * Terpakai" akan terlihat tidak sinkron dengan "Sisa Token" setiap kali
      * user pindah plan, karena Redis quota di-reset per subscription baru tapi
      * usage_logs historis tetap ada untuk audit.
      */

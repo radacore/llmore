@@ -16,19 +16,19 @@ const USAGE_RESPONSE = `{
 const plans = [
   {
     name: "Basic",
-    quota: "70.000 credit",
+    quota: "70.000 token",
     price: "Rp49.000/bulan",
     accent: "bg-beige text-washed-black",
   },
   {
     name: "Pro",
-    quota: "150.000 credit",
+    quota: "150.000 token",
     price: "Rp99.000/bulan",
     accent: "bg-[#ffba09] text-washed-black",
   },
   {
     name: "Advance",
-    quota: "320.000 credit",
+    quota: "320.000 token",
     price: "Rp199.000/bulan",
     accent: "bg-[#1009f6] text-pure-white",
   },
@@ -40,7 +40,7 @@ export function UsageSection() {
       <SectionHeading id="usage">Usage &amp; Quota</SectionHeading>
 
       <p className="text-[15px] text-washed-black leading-[1.7] mb-7">
-        Pantau penggunaan API dan sisa credit kamu melalui endpoint usage.
+        Pantau penggunaan API dan sisa token kamu melalui endpoint usage.
       </p>
 
       <div className="terminal-surface rounded-[24px] p-5 mb-7 border-2 flex items-center gap-3 flex-wrap">
@@ -63,7 +63,7 @@ export function UsageSection() {
       <CodeBlock language="json" code={USAGE_RESPONSE} />
 
       <p className="text-[11px] font-bold text-[#1009f6] uppercase tracking-[0.2em] mb-4 mt-8">
-        Credit per Plan
+        Token per Plan
       </p>
 
       <div className="rounded-[24px] overflow-hidden border border-washed-black/10 bg-pure-white">
@@ -75,7 +75,7 @@ export function UsageSection() {
                   Plan
                 </th>
                 <th className="text-left px-5 py-3 font-bold text-washed-black text-[12px] uppercase tracking-widest">
-                  Credit/Bulan
+                  Token/Bulan
                 </th>
                 <th className="text-left px-5 py-3 font-bold text-washed-black text-[12px] uppercase tracking-widest">
                   Harga

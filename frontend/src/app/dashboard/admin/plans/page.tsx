@@ -164,7 +164,7 @@ function AdminPlansContent() {
     if (!form.price || isNaN(Number(form.price)) || Number(form.price) < 0)
       errors.price = 'Price harus angka >= 0';
     if (!form.token_quota || isNaN(Number(form.token_quota)) || Number(form.token_quota) <= 0)
-      errors.token_quota = 'Credit quota harus angka > 0';
+      errors.token_quota = 'Token quota harus angka > 0';
     if (
       !form.rate_limit_per_minute ||
       isNaN(Number(form.rate_limit_per_minute)) ||
@@ -276,7 +276,7 @@ function AdminPlansContent() {
                 <tr>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Plan</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Harga</th>
-                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Credit Quota</th>
+                  <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Token Quota</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Rate Limit</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">API Keys</th>
                   <th className="px-5 py-4 text-xs font-semibold text-dim-grey uppercase tracking-wider">Status</th>
@@ -397,7 +397,7 @@ function AdminPlansContent() {
               error={formErrors.price}
             />
             <Input
-              label="Credit Quota"
+              label="Token Quota"
               type="number"
               placeholder="e.g. 150000"
               value={form.token_quota}

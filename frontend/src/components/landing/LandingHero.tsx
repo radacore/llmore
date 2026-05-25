@@ -71,7 +71,7 @@ export function LandingHero() {
 
           {/* Trust */}
           <p className="mt-5 text-[11px] text-dim-grey">
-            Paket Basic 70.000 credit/bulan · Setup &lt; 2 menit
+            Paket Basic 70.000 token/bulan · Setup &lt; 2 menit
           </p>
         </div>
 

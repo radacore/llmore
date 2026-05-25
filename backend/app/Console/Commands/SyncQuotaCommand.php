@@ -19,7 +19,7 @@ class SyncQuotaCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Sync credit quota from Redis to PostgreSQL';
+    protected $description = 'Sync token quota from Redis to PostgreSQL';
 
     /**
      * Execute the console command.

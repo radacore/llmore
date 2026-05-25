@@ -16,7 +16,7 @@ const steps = [
         >
           halaman registrasi
         </Link>
-        . Pilih paket credit sesuai kebutuhan.
+        . Pilih paket token sesuai kebutuhan.
       </>
     ),
   },

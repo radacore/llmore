@@ -5,19 +5,19 @@ const rateLimits = [
   {
     plan: "Basic",
     perMinute: "30 req/menit",
-    perDay: "Menyesuaikan credit",
+    perDay: "Menyesuaikan token",
     accent: "bg-beige text-washed-black",
   },
   {
     plan: "Pro",
     perMinute: "60 req/menit",
-    perDay: "Menyesuaikan credit",
+    perDay: "Menyesuaikan token",
     accent: "bg-[#ffba09] text-washed-black",
   },
   {
     plan: "Advance",
     perMinute: "120 req/menit",
-    perDay: "Menyesuaikan credit",
+    perDay: "Menyesuaikan token",
     accent: "bg-[#1009f6] text-pure-white",
   },
 ];

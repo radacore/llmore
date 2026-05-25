@@ -85,7 +85,7 @@ export function LandingPricing() {
                   <div className="mt-8 grid gap-3 rounded-[24px] bg-pearl p-4">
                     <div className="flex items-center justify-between gap-4 border-b border-washed-black/10 pb-3">
                       <span className="text-[13px] font-medium text-dim-grey">
-                        Credit/bulan
+                        Token/bulan
                       </span>
                       <span className="text-[16px] font-bold text-royal-blue">
                         {formatNumber(plan.token_quota)}

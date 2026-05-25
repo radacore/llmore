@@ -258,7 +258,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Adjust credit quota untuk user tertentu.
+     * Adjust token quota untuk user tertentu.
      * Amount bisa positif (tambah) atau negatif (kurangi).
      */
     public function adjustQuota(Request $request, string $id): JsonResponse
@@ -309,7 +309,7 @@ class AdminUserController extends Controller
     }
 
     /**
-     * Activate custom credit plan untuk user tertentu.
+     * Activate custom token plan untuk user tertentu.
      * Hanya bisa dilakukan oleh admin secara manual.
      */
     public function activateEnterprise(
@@ -330,7 +330,7 @@ class AdminUserController extends Controller
 
         if (!$enterprisePlan) {
             return response()->json(
-                ["error" => "Custom credit plan not found"],
+                ["error" => "Custom token plan not found"],
                 404,
             );
         }
@@ -340,7 +340,7 @@ class AdminUserController extends Controller
             ->where("status", "active")
             ->update(["status" => "expired"]);
 
-        // Create custom credit subscription
+        // Create custom token subscription
         $subscription = Subscription::create([
             "user_id" => $user->id,
             "plan_id" => $enterprisePlan->id,
@@ -355,7 +355,7 @@ class AdminUserController extends Controller
         $this->quotaService->initializeQuota($subscription);
 
         return response()->json([
-            "message" => "Custom credit plan activated successfully",
+            "message" => "Custom token plan activated successfully",
             "subscription" => $subscription->load("plan"),
         ]);
     }

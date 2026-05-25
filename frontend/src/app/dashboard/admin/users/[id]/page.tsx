@@ -259,7 +259,7 @@ function AdminUserDetailContent() {
                   onClick={() => setEnterpriseModalOpen(true)}
                   leftIcon={<Building2 className="h-3.5 w-3.5" />}
                 >
-                  Activate Custom Credit
+                  Activate Custom Token
                 </Button>
                 {subscription && (
                   <Button
@@ -267,7 +267,7 @@ function AdminUserDetailContent() {
                     size="sm"
                     onClick={() => setQuotaModalOpen(true)}
                   >
-                    Adjust Credit
+                    Adjust Token
                   </Button>
                 )}
               </div>
@@ -288,7 +288,7 @@ function AdminUserDetailContent() {
                 </div>
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm text-dim-grey">Credit Usage</span>
+                    <span className="text-sm text-dim-grey">Token Usage</span>
                     <span className="text-sm text-washed-black/80">
                       {formatNumber(subscription.token_used)} /{" "}
                       {formatNumber(subscription.token_quota)}
@@ -337,7 +337,7 @@ function AdminUserDetailContent() {
               <p className="text-2xl font-bold text-washed-black">
                 {formatNumber(user.usage?.total_tokens ?? 0)}
               </p>
-              <p className="text-xs text-dim-grey mt-1">Total Credits</p>
+              <p className="text-xs text-dim-grey mt-1">Total Tokens</p>
             </div>
             <div className="bg-green-50 rounded-xl p-4 text-center">
               <Activity className="h-6 w-6 text-green-600 mx-auto mb-2" />
@@ -481,11 +481,11 @@ function AdminUserDetailContent() {
         </div>
       </div>
 
-      {/* Adjust Credit Modal */}
+      {/* Adjust Token Modal */}
       <Modal
         isOpen={quotaModalOpen}
         onClose={() => setQuotaModalOpen(false)}
-        title="Adjust Credit Quota"
+        title="Adjust Token Quota"
         footer={
           <div className="flex justify-end gap-2">
             <Button variant="outline" onClick={() => setQuotaModalOpen(false)}>
@@ -503,7 +503,7 @@ function AdminUserDetailContent() {
       >
         <div className="space-y-4 p-6">
           <Input
-            label="Jumlah Credit"
+            label="Jumlah Token"
             type="number"
             placeholder="Contoh: 5000 (positif = tambah, negatif = kurangi)"
             value={quotaAmount}
@@ -518,11 +518,11 @@ function AdminUserDetailContent() {
         </div>
       </Modal>
 
-      {/* Activate Custom Credit Modal */}
+      {/* Activate Custom Token Modal */}
       <Modal
         isOpen={enterpriseModalOpen}
         onClose={() => setEnterpriseModalOpen(false)}
-        title="Activate Custom Credit Plan"
+        title="Activate Custom Token Plan"
         footer={
           <div className="flex justify-end gap-2">
             <Button
@@ -537,7 +537,7 @@ function AdminUserDetailContent() {
               disabled={!enterpriseTokenQuota || !enterpriseDurationDays}
               leftIcon={<Building2 className="h-4 w-4" />}
             >
-              Activate Custom Credit
+              Activate Custom Token
             </Button>
           </div>
         }
@@ -546,12 +546,12 @@ function AdminUserDetailContent() {
           <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">
             <p className="font-medium">⚠️ Perhatian</p>
             <p className="mt-1">
-              Ini akan mengaktifkan paket custom credit untuk user ini dan
+              Ini akan mengaktifkan paket custom token untuk user ini dan
               menonaktifkan paket yang sedang aktif.
             </p>
           </div>
           <Input
-            label="Credit Quota"
+            label="Token Quota"
             type="number"
             placeholder="Contoh: 1000000"
             value={enterpriseTokenQuota}

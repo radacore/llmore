@@ -133,10 +133,10 @@ export default function DashboardOverviewPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Credit Balance */}
+        {/* Token Balance */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-dim-grey">Sisa Credit</p>
+            <p className="text-sm font-medium text-dim-grey">Sisa Token</p>
             <div className="p-2 bg-royal-blue/10 rounded-xl">
               <Coins className="h-5 w-5 text-royal-blue" />
             </div>
@@ -189,11 +189,11 @@ export default function DashboardOverviewPage() {
           </p>
         </div>
 
-        {/* Credits Used */}
+        {/* Tokens Used */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-dim-grey">
-              Credit Terpakai Bulan Ini
+              Token Terpakai Bulan Ini
             </p>
             <div className="p-2 bg-orange-50 rounded-xl">
               <Flame className="h-5 w-5 text-orange-600" />
@@ -207,7 +207,7 @@ export default function DashboardOverviewPage() {
             </p>
           )}
           <p className="mt-2 text-xs text-silver-mist">
-            dari {formatNumber(tokenQuota)} credit
+            dari {formatNumber(tokenQuota)} token
           </p>
         </div>
 
@@ -245,7 +245,7 @@ export default function DashboardOverviewPage() {
         {/* Usage Chart */}
         <div className="bg-pure-white rounded-2xl border border-washed-black/10 p-6">
           <h2 className="text-lg font-semibold text-washed-black mb-4">
-            Penggunaan Credit (7 Hari Terakhir)
+            Penggunaan Token (7 Hari Terakhir)
           </h2>
           {usageLoading ? (
             <div className="flex items-center justify-center h-64">
@@ -273,7 +273,7 @@ export default function DashboardOverviewPage() {
                     }}
                     formatter={(value) => [
                       formatNumber(Number(value)),
-                      "Credit",
+                      "Token",
                     ]}
                   />
                   <Line
@@ -341,7 +341,7 @@ export default function DashboardOverviewPage() {
                     <p className="text-sm font-medium text-washed-black truncate">
                       {tx.type === "subscription"
                         ? `Langganan ${tx.plan?.name ?? ""}`
-                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
+                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
                     </p>
                     <p className="text-xs text-silver-mist mt-0.5">
                       {tx.order_id} · {formatRelativeTime(tx.created_at)}

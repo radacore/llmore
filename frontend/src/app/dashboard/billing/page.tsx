@@ -228,7 +228,7 @@ export default function BillingPage() {
                     <ul className="space-y-3 mb-6">
                       <li className="flex items-center gap-2 text-sm text-dim-grey">
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                        {formatNumber(plan.token_quota)} credit/bulan
+                        {formatNumber(plan.token_quota)} token/bulan
                       </li>
                       <li className="flex items-center gap-2 text-sm text-dim-grey">
                         <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
@@ -317,7 +317,7 @@ export default function BillingPage() {
                       <td className="px-4 py-3 text-sm text-washed-black/80">
                         {tx.type === 'subscription'
                           ? `Langganan ${tx.plan?.name ?? ''}`
-                          : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
+                          : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
                       </td>
                       <td className="px-4 py-3 text-sm font-medium text-washed-black">
                         {formatCurrency(tx.amount)}
@@ -348,7 +348,7 @@ export default function BillingPage() {
                       <p className="text-sm font-medium text-washed-black">
                         {tx.type === 'subscription'
                           ? `Langganan ${tx.plan?.name ?? ''}`
-                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Credit`}
+                        : `Top Up ${formatNumber(tx.token_amount ?? 0)} Token`}
                       </p>
                       <code className="text-xs text-silver-mist font-mono">{tx.order_id}</code>
                     </div>

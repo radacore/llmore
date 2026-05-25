@@ -25,7 +25,7 @@ export function LandingCta() {
               Siap mulai bangun aplikasi AI kamu?
             </h2>
             <p className="mt-5 text-washed-black text-[16px] md:text-[18px] leading-[1.6]">
-              Mulai dari paket Basic dengan 70.000 credit/bulan. Bayar lokal,
+              Mulai dari paket Basic dengan 70.000 token/bulan. Bayar lokal,
               tanpa kartu kredit luar negeri.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
