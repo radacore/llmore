@@ -61,7 +61,7 @@ flowchart LR
 | Frontend | Next.js 16 + React 19 | 3000 | Dashboard, docs, auth UI |
 | Backend | Laravel 13 | 8000 | Auth, billing, API key, admin, usage |
 | Gateway | Node.js + Express | 3001 | OpenAI-compatible proxy + streaming |
-| 9router | Next.js | 20128 (lokal) | Router pool antar provider/upstream, A/B + failover |
+| 9router | Next.js | 20128 (lokal) | Router pool antar provider/upstream, A/B + failover. Repo terpisah, lihat [docs/9router-setup.md](docs/9router-setup.md) |
 | LLM Proxy | FastAPI + httpx | 9898 (internal) | Pool key OpenRouter + auto-rotasi + failover |
 | Database | PostgreSQL 16 | 5432 | Data utama |
 | Cache | Redis 7 | 6379 | Quota, rate limit, API key cache, queue |
@@ -135,12 +135,17 @@ flowchart TD
 
 ## Quick Start (Docker)
 
+> **Sebelum mulai:** LLMora butuh sibling repo **9router** untuk routing upstream. Lihat [`docs/9router-setup.md`](docs/9router-setup.md) — clone-nya terpisah di samping folder ini.
+
 ```bash
-# 1) Clone repository
+# 1) Clone repository LLMora
 git clone https://github.com/radacore/llmore.git
 cd llmore
 
-# 2) Siapkan env file
+# 1b) Clone 9router sibling (branch fix/combo-with-slash)
+git clone -b fix/combo-with-slash https://github.com/radacore/9router.git ./9router
+
+# 2) Siapkan env file (termasuk 9router/.env — lihat docs/9router-setup.md)
 cp .env.example .env
 cp backend/.env.example backend/.env
 cp gateway/.env.example gateway/.env

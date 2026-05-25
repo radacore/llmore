@@ -95,7 +95,7 @@ redis-cli ping  # PONG
 | Google OAuth        | Login via Google                  | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth 2.0 Client IDs |
 | Midtrans Sandbox    | Payment gateway (sandbox mode)    | [Midtrans Dashboard](https://dashboard.sandbox.midtrans.com/) → Settings → Access Keys |
 | OpenRouter API Key  | Upstream LLM (dipool di service `llm-proxy`, dirouting lewat 9router) | [OpenRouter](https://openrouter.ai/keys) atau auto-trial via Alice/overment (lihat `llm-proxy-vps/README.md`) |
-| 9router (radacore fork) | Router pool antara gateway dan llm-proxy | Clone manual: `git clone https://github.com/radacore/9router.git /Users/rada/Documents/llmore/9router` lalu buat `9router/.env` (JWT_SECRET, INITIAL_PASSWORD, DATA_DIR, PORT=20128) |
+| 9router (radacore fork) | Router pool antara gateway dan llm-proxy | Clone manual branch `fix/combo-with-slash`: `git clone -b fix/combo-with-slash https://github.com/radacore/9router.git /Users/rada/Documents/llmore/9router` lalu buat `9router/.env` (JWT_SECRET, INITIAL_PASSWORD, DATA_DIR, PORT=20128). Workflow lengkap di [`docs/9router-setup.md`](docs/9router-setup.md) |
 
 ### Cara Setup Google OAuth
 1. Buka [Google Cloud Console](https://console.cloud.google.com/)
