@@ -51,7 +51,8 @@ flowchart LR
     B --> P[(PostgreSQL)]
     B --> R[(Redis)]
     G --> R
-    G --> L[LLM Proxy Pool<br/>FastAPI :9898]
+    G --> X[9router<br/>Next.js :20128]
+    X --> L[LLM Proxy Pool<br/>FastAPI :9898]
     L --> O[OpenRouter]
 ```
 
@@ -60,6 +61,7 @@ flowchart LR
 | Frontend | Next.js 16 + React 19 | 3000 | Dashboard, docs, auth UI |
 | Backend | Laravel 13 | 8000 | Auth, billing, API key, admin, usage |
 | Gateway | Node.js + Express | 3001 | OpenAI-compatible proxy + streaming |
+| 9router | Next.js | 20128 (lokal) | Router pool antar provider/upstream, A/B + failover |
 | LLM Proxy | FastAPI + httpx | 9898 (internal) | Pool key OpenRouter + auto-rotasi + failover |
 | Database | PostgreSQL 16 | 5432 | Data utama |
 | Cache | Redis 7 | 6379 | Quota, rate limit, API key cache, queue |
@@ -91,7 +93,8 @@ flowchart TD
     M --> N[Gateway validasi API Key dari Redis]
     N --> O[Gateway cek rate limit dan quota]
     O --> P[Proxy request ke LLM Proxy Pool - OpenRouter]
-    P --> Q[Streaming response ke client]
+    P --> P2[9router pilih provider sesuai combo]
+    P2 --> Q[Streaming response ke client]
     Q --> R[Gateway deduct quota dan push usage_logs_queue]
     R --> S[Laravel command usage:process simpan ke PostgreSQL]
     S --> T[Dashboard Usage/Billing ter-update]
@@ -106,7 +109,7 @@ flowchart TD
 5. Setelah pembayaran berhasil, webhook memicu aktivasi subscription dan reset quota.
 6. User membuat API key untuk akses gateway AI.
 7. Client eksternal memanggil endpoint gateway OpenAI-compatible.
-8. Gateway membaca API key cache dari Redis, cek quota/rate limit, lalu meneruskan request ke service `llm-proxy` (FastAPI). `llm-proxy` memilih API key OpenRouter dari pool (least-inflight), forward ke OpenRouter, dan otomatis failover/ganti key kalau ada error 401/402/429.
+8. Gateway membaca API key cache dari Redis, cek quota/rate limit, lalu meneruskan request ke **9router** (`http://127.0.0.1:20128/api/v1` saat lokal). 9router memilih provider yang sehat berdasarkan kombinasi/model yang sudah didaftarkan admin di dashboard 9router, lalu meneruskan ke `llm-proxy` (FastAPI). `llm-proxy` memilih API key OpenRouter dari pool (least-inflight), forward ke OpenRouter, dan otomatis failover/ganti key kalau ada error 401/402/429.
 9. Gateway mengembalikan streaming/non-streaming response ke client.
 10. Usage log diantrikan di Redis, lalu diproses Laravel scheduler ke PostgreSQL.
 11. Dashboard menampilkan statistik penggunaan, transaksi, dan status paket terbaru.
@@ -237,9 +240,9 @@ Salin `.env.example` root ke `.env`, lalu sesuaikan nilainya.
 | `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | - |
 | `KLIKQRIS_API_KEY` | API key KlikQRIS | - |
 | `KLIKQRIS_MERCHANT_ID` | Merchant ID KlikQRIS | - |
-| `UPSTREAM_API_URL` | URL service `llm-proxy` (OpenAI-compatible) | `http://llm-proxy:9898/v1` |
-| `UPSTREAM_API_KEY` | Diisi kalau llm-proxy diproteksi `PROXY_API_KEY`; default kosong untuk akses internal docker network | - |
-| `UPSTREAM_DEFAULT_MODEL` | Default model OpenRouter kalau client tidak menyebut model | `anthropic/claude-opus-4.7` |
+| `UPSTREAM_API_URL` | URL upstream OpenAI-compatible. Saat ini diarahkan ke **9router**. | `http://127.0.0.1:20128/api/v1` |
+| `UPSTREAM_API_KEY` | Diisi kalau 9router meng-aktifkan `REQUIRE_API_KEY`; default kosong untuk lokal | - |
+| `UPSTREAM_DEFAULT_MODEL` | Default model kalau client tidak menyebut model | `anthropic/claude-opus-4.7` |
 | `NEXT_PUBLIC_API_URL` | URL backend untuk frontend | `http://localhost:8000/api` |
 | `NEXT_PUBLIC_GATEWAY_URL` | URL gateway untuk frontend | `http://localhost:3001` |
 | `GATEWAY_PORT` | Port service gateway | `3001` |

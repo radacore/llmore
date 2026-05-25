@@ -16,6 +16,7 @@ BACKEND_PORT="${BACKEND_PORT:-8000}"
 FRONTEND_PORT="${FRONTEND_PORT:-3000}"
 GATEWAY_PORT="${GATEWAY_PORT:-3001}"
 LLMPROXY_PORT="${LLMPROXY_PORT:-9898}"
+ROUTER_PORT="${ROUTER_PORT:-20128}"
 
 # ------------------------ Warna ----------------------------------------------
 RED='\033[0;31m'
@@ -109,11 +110,10 @@ start_service() {
 }
 
 # ------------------------ Env overrides untuk run lokal ----------------------
-# gateway/.env dan backend/.env diisi untuk docker (UPSTREAM_API_URL=http://llm-proxy:...).
-# Saat run lokal lewat skrip ini, llm-proxy berjalan di host:9898, jadi kita override
-# env per-service. dotenv di gateway TIDAK menimpa process.env yang sudah ada, jadi
-# nilai dari shell di sini yang dipakai.
-LOCAL_UPSTREAM_API_URL="http://127.0.0.1:${LLMPROXY_PORT}/v1"
+# Arsitektur: gateway → 9router (port ROUTER_PORT) → llm-proxy → OpenRouter.
+# Override UPSTREAM_API_URL ke 9router lokal. dotenv di gateway TIDAK menimpa
+# process.env yang sudah ada, jadi nilai dari shell di sini yang dipakai.
+LOCAL_UPSTREAM_API_URL="http://127.0.0.1:${ROUTER_PORT}/api/v1"
 
 # Aktifkan job control supaya tiap child jadi process group sendiri
 set -m
@@ -133,6 +133,7 @@ ok "Semua tool tersedia"
 [[ -f "${PROJECT_ROOT}/backend/.env"       ]] || { err "backend/.env tidak ada. Salin dari backend/.env.example"; exit 1; }
 [[ -f "${PROJECT_ROOT}/gateway/.env"       ]] || { err "gateway/.env tidak ada. Salin dari gateway/.env.example"; exit 1; }
 [[ -f "${PROJECT_ROOT}/llm-proxy-vps/.env" ]] || { err "llm-proxy-vps/.env tidak ada. Salin dari llm-proxy-vps/.env.example"; exit 1; }
+[[ -f "${PROJECT_ROOT}/9router/.env"       ]] || { err "9router/.env tidak ada. Clone https://github.com/radacore/9router.git ke /9router lalu buat .env (lihat tutorialjalankansecaralokal.md)"; exit 1; }
 if [[ ! -f "${PROJECT_ROOT}/frontend/.env.local" ]]; then
   warn "frontend/.env.local tidak ada (frontend mungkin pakai default). Lanjut..."
 fi
@@ -163,6 +164,17 @@ if [[ ! -x "${LLMPROXY_PY}" ]]; then
     exit 1
   fi
   ok "venv llm-proxy siap"
+fi
+
+# ------------------------ Bootstrap 9router node_modules ---------------------
+ROUTER_DIR="${PROJECT_ROOT}/9router"
+if [[ ! -d "${ROUTER_DIR}/node_modules" ]]; then
+  log "Bootstrap 9router npm install (sekali saja)..."
+  if ! (cd "${ROUTER_DIR}" && npm install) >"${LOG_DIR}/9router-bootstrap.log" 2>&1; then
+    err "Install dependencies 9router gagal. Lihat: ${LOG_DIR}/9router-bootstrap.log"
+    exit 1
+  fi
+  ok "9router node_modules siap"
 fi
 
 # ------------------------ Start PostgreSQL -----------------------------------
@@ -301,16 +313,20 @@ start_service "scheduler" "${YEL}" "${PROJECT_ROOT}/backend" \
   php artisan schedule:work
 
 # 4) LLM Proxy (FastAPI — pool key OpenRouter + auto-rotasi)
-# Dijalankan sebelum gateway karena gateway memanggilnya.
 start_service "llmproxy"  "${MAG}" "${LLMPROXY_DIR}" \
   "${LLMPROXY_PY}" run.py --mode dev
 
-# 5) Gateway Node.js — override UPSTREAM_API_URL ke host llm-proxy lokal
+# 5) 9router (Next.js — pool router antara gateway dan llm-proxy)
+PORT="${ROUTER_PORT}" \
+  start_service "9router"  "${BLU}" "${ROUTER_DIR}" \
+  npm run dev
+
+# 6) Gateway Node.js — override UPSTREAM_API_URL ke host 9router lokal
 UPSTREAM_API_URL="${LOCAL_UPSTREAM_API_URL}" \
   start_service "gateway"   "${CYN}" "${PROJECT_ROOT}/gateway" \
   node src/index.js
 
-# 6) Frontend Next.js
+# 7) Frontend Next.js
 start_service "frontend"  "${GRN}" "${PROJECT_ROOT}/frontend" \
   npm run dev
 
@@ -323,6 +339,7 @@ echo "============================================================"
 printf "  Frontend  : ${GRN}http://localhost:%s${RST}\n"  "${FRONTEND_PORT}"
 printf "  Backend   : ${MAG}http://localhost:%s${RST}\n"  "${BACKEND_PORT}"
 printf "  Gateway   : ${CYN}http://localhost:%s${RST}\n"  "${GATEWAY_PORT}"
+printf "  9router   : ${BLU}http://localhost:%s${RST} (dashboard)\n" "${ROUTER_PORT}"
 printf "  LLM Proxy : ${MAG}http://localhost:%s${RST} (dashboard)\n" "${LLMPROXY_PORT}"
 printf "  Postgres  : ${BLU}localhost:5432${RST}\n"
 printf "  Redis     : ${BLU}localhost:6379${RST}\n"
@@ -339,6 +356,7 @@ tail -n 0 -F \
   "${LOG_DIR}/queue.log" \
   "${LOG_DIR}/scheduler.log" \
   "${LOG_DIR}/llmproxy.log" \
+  "${LOG_DIR}/9router.log" \
   "${LOG_DIR}/gateway.log" \
   "${LOG_DIR}/frontend.log" &
 TAIL_PID=$!

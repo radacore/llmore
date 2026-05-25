@@ -94,7 +94,8 @@ redis-cli ping  # PONG
 |---------------------|-----------------------------------|----------------------------------------------------------|
 | Google OAuth        | Login via Google                  | [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials → OAuth 2.0 Client IDs |
 | Midtrans Sandbox    | Payment gateway (sandbox mode)    | [Midtrans Dashboard](https://dashboard.sandbox.midtrans.com/) → Settings → Access Keys |
-| OpenRouter API Key  | Upstream LLM (dipool di service `llm-proxy`) | [OpenRouter](https://openrouter.ai/keys) atau auto-trial via Alice/overment (lihat `llm-proxy-vps/README.md`) |
+| OpenRouter API Key  | Upstream LLM (dipool di service `llm-proxy`, dirouting lewat 9router) | [OpenRouter](https://openrouter.ai/keys) atau auto-trial via Alice/overment (lihat `llm-proxy-vps/README.md`) |
+| 9router (radacore fork) | Router pool antara gateway dan llm-proxy | Clone manual: `git clone https://github.com/radacore/9router.git /Users/rada/Documents/llmore/9router` lalu buat `9router/.env` (JWT_SECRET, INITIAL_PASSWORD, DATA_DIR, PORT=20128) |
 
 ### Cara Setup Google OAuth
 1. Buka [Google Cloud Console](https://console.cloud.google.com/)
@@ -269,9 +270,10 @@ REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=0
 
-# Upstream LLM Proxy (lihat llm-proxy-vps/. Di docker compose ini service name = llm-proxy)
-UPSTREAM_API_URL=http://llm-proxy:9898/v1
-# Kosong = no-auth (default untuk akses internal docker network)
+# Upstream via 9router (gateway → 9router → llm-proxy → OpenRouter).
+# Saat lokal pakai 127.0.0.1:20128. Di docker compose: http://9router:20128/api/v1.
+UPSTREAM_API_URL=http://127.0.0.1:20128/api/v1
+# Kosong = no-auth. Set kalau 9router mengaktifkan REQUIRE_API_KEY.
 UPSTREAM_API_KEY=
 UPSTREAM_DEFAULT_MODEL=anthropic/claude-opus-4.7
 
@@ -469,8 +471,8 @@ REDIS_PORT=6379
 REDIS_PASSWORD=
 REDIS_DB=0
 
-# Upstream LLM Proxy
-UPSTREAM_API_URL=http://llm-proxy:9898/v1
+# Upstream via 9router (gateway → 9router → llm-proxy → OpenRouter)
+UPSTREAM_API_URL=http://127.0.0.1:20128/api/v1
 UPSTREAM_API_KEY=
 UPSTREAM_DEFAULT_MODEL=anthropic/claude-opus-4.7
 
@@ -745,7 +747,8 @@ php artisan migrate:fresh --seed
 
 ### 🤖 Gateway & AI Request
 - Gateway **membutuhkan Redis** yang berjalan untuk rate limiting dan caching
-- Gateway **membutuhkan service `llm-proxy` berjalan** untuk memproses AI request
+- Gateway **membutuhkan 9router (port 20128) dan service `llm-proxy` berjalan** untuk memproses AI request
+- 9router butuh provider `llm-proxy` didaftarkan manual di dashboard `http://localhost:20128/dashboard` (login pakai `INITIAL_PASSWORD` dari `9router/.env`)
 - Service `llm-proxy` butuh minimal 1 OpenRouter API key aktif di `llm-proxy-vps/.env` atau di `data/keys.json`
 - Tanpa key OpenRouter yang valid, endpoint `/chat/completions` akan mengembalikan error 402/503
 
